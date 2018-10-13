@@ -10,9 +10,12 @@ namespace wallet_checker.Command
     {
         None,
         CheckState,
+        GetAddressList,
+        CreateAddress,
         StartStaking,
         StopStaking,
         RestartQtumWallet,
+        SendQtum,
     }
     
 
@@ -35,8 +38,30 @@ namespace wallet_checker.Command
 
         ///--------------------------------------------------------------------------------------------------------
         ///
+        private bool isCompleted = false;
+        public bool IsCompleted {
+            get
+            {
+                return isCompleted;
+            }
+            protected set
+            {
+                if (isCompleted == value)
+                    return;
+
+                isCompleted = value;
+
+                if (isCompleted)
+                    OnFinish();
+            }
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
         public async Task<bool> Process(long requesterId, string requesterName, DateTime requestTime, params object[] args)
         {
+            IsCompleted = false;
+
             UserList.AddUser(requesterId);
 
             try
@@ -49,30 +74,40 @@ namespace wallet_checker.Command
             }
             catch (Exception)
             {
-                
+                IsCompleted = true;
             }
 
             LogStartCommand(GetCommandType().ToString(), requesterId, requesterName);
             
             return await OnStart(requesterId, requesterName, requestTime, args);
-        }        
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        public virtual async Task OnUpdate() { await Task.Run(() => { }); }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        protected virtual void OnFinish() { }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        public virtual async Task OnMessage(Telegram.Bot.Types.Message message) { await Task.Run(() => { }); }
 
         ///--------------------------------------------------------------------------------------------------------
         ///
         protected async Task SendMessage(long requesterId, string msg)
         {
+            if (string.IsNullOrEmpty(msg))
+                return;
+
             if (requesterId >= 0)
             {
                 await TelegramBot.Bot.SendTextMessageAsync(requesterId, msg);
             }
             else
             {
-                async void sendProcessor(long userId)
-                {
-                    await TelegramBot.Bot.SendTextMessageAsync(userId, msg);
-                }
-
-                await UserList.ForeachAsync(sendProcessor);
+                await UserList.ForeachSendMsg(msg);
             }
         }
 

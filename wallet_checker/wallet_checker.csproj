@@ -8,9 +8,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>wallet_checker</RootNamespace>
     <AssemblyName>wallet_checker</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -38,6 +39,9 @@
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Otp.NET, Version=1.2.0.0, Culture=neutral, PublicKeyToken=38a48df817e173a6, processorArchitecture=MSIL">
+      <HintPath>..\packages\Otp.NET.1.2.0\lib\net45\Otp.NET.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -51,15 +55,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commander.cs" />
+    <Compile Include="CommandLineController.cs" />
     <Compile Include="Command\CheckState.cs" />
+    <Compile Include="Command\CreateAddress.cs" />
+    <Compile Include="Command\GetAddressList.cs" />
     <Compile Include="Command\ICommand.cs" />
     <Compile Include="Command\CommandFactory.cs" />
     <Compile Include="Command\RestartQtumWallet.cs" />
+    <Compile Include="Command\SendQtum.cs" />
     <Compile Include="Command\StartStaking.cs" />
     <Compile Include="Command\StopStaking.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="OtpChecker.cs" />
     <Compile Include="PasswordManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

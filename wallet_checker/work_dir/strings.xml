@@ -119,9 +119,6 @@
   <data name=" (숙성 대기 중)">
 	<en> (waiting for mature)</en>
   </data>
-  <data name="프로그램에 등록된 패스워드가 퀀텀 지갑의 패스워드와 일치하지 않다면, 컨트롤에 실패하였을 수 있습니다.\n[1. 확인] 명령어로 정상적인 변경이 되었는지 확인 해 주세요.\n확인 후 정상적인 작동이 이뤄지지 않았다면, data.bin 파일을 지우고 올바른 패스워드를 다시 등록 해 주세요.">
-	<en> If the password registered in the program does not match the password in the Quantum Wallet, the control may have failed.\n Please check if normal change is made with command [1. CheckState]\n If the verification does not work, please delete the data.bin file and re-register the correct password.</en>
-  </data>
   <data name="퀀텀 월렛의 경로가 잘못되었습니다. Config.txt 파일에서 경로를 확인 해 주세요.\n">
 	<en>The path to Qtum Wallet is invalid. Please check the path in the Config.txt file.\n</en>
   </data>
@@ -148,5 +145,74 @@
   </data>
   <data name="{0} 지갑을 재기동합니다.">
 	<en>{0} Restart Qtum Wallet.</en>
+  </data>
+  <data name="보내기">
+	<en>Send</en>
+  </data>
+  <data name="퀀텀을 전송합니다.">
+	<en>Send the qtum to another address.</en>
+  </data>
+  <data name="채굴 상태에서는 전송 할 수 없습니다.">
+	<en>Can not be sent in the mining state.</en>
+  </data>
+  <data name="상대방의 퀀텀 주소를 입력하세요.">
+	<en>Enter the other party's Qtum address.</en>
+  </data>
+  <data name="유효하지 않은 주소입니다.">
+	<en>Invalid address.</en>
+  </data>
+  <data name="보낼 수량을 입력하세요.">
+	<en>Please enter quantity to send.</en>
+  </data>
+  <data name="수량이 부족합니다.">
+	<en>The remaining quantity is insufficient.</en>
+  </data>
+  <data name="받는 주소 : {0}">
+	<en>Incoming address: {0}</en>
+  </data>
+  <data name="보낼 수량 : {0}">
+	<en>Quantity to send: {0}</en>
+  </data>
+  <data name="정말 진행 하시려면 숫자 1을 입력하세요.">
+	<en>Enter the number 1 to really proceed.</en>
+  </data>
+  <data name="보내기가 취소되었습니다.">
+	<en>Send canceled.</en>
+  </data>
+  <data name="보내기에 실패했습니다.">
+	<en>Send failed.</en>
+  </data>
+  <data name="보내기 응답 완료.\n">
+	<en>Sending response completed.</en>
+  </data>
+  <data name="주소 보기">
+	<en>View address list</en>
+  </data>
+  <data name="지갑의 주소 리스트를 조회합니다.">
+	<en>View your Wallet's address list.</en>
+  </data>
+  <data name="{0} 주소 목록을 확인하는 중 입니다.">
+	<en>{0} Checking address list.</en>
+  </data>
+  <data name="주소 목록 확인 응답 완료.\n">
+	<en>Address list Checking completed.</en>
+  </data>
+  <data name="주소 생성">
+	<en>Create address</en>
+  </data>
+  <data name="지갑에 새 주소를 생성합니다.">
+	<en>Create new address.</en>
+  </data>
+  <data name="주소 생성 응답 완료.\n">
+	<en>Craete new Address completed.</en>
+  </data>
+  <data name ="Otp 인증 번호를 입력 하세요.">
+	<en>Enter the Otp authentication number.</en>
+  </data>
+  <data name ="Otp 인증에 실패 했습니다.">
+	<en>Otp authentication failed.</en>
+  </data>
+  <data name ="제한시간 초과">
+	<en>Timeout exceeded.</en>
   </data>
 </root>

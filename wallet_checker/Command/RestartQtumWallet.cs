@@ -34,7 +34,7 @@ namespace wallet_checker.Command
         {
             await SendMessage(requesterId, strings.Format("{0} 지갑을 재기동합니다.", requesterName));
             
-            bool success = Restart();
+            bool success = await Restart();
 
             string response = strings.Format("재기동 완료. 결과 : {0}", success ? "Success" : "Failed");
 
@@ -49,12 +49,14 @@ namespace wallet_checker.Command
                     return await autoStaking.Process(requesterId, requesterName, DateTime.Now, args);
             }
 
+            IsCompleted = true;
+
             return success;
         }
 
         ///--------------------------------------------------------------------------------------------------------
         /// 
-        public static bool Restart()
+        public static async Task<bool> Restart()
         {
             Logger.Log("RestartQtumWallet");
 
@@ -70,9 +72,21 @@ namespace wallet_checker.Command
                     }
                 }
 
-                while (System.Diagnostics.Process.GetProcessesByName("qtum-qt").Length == 0)
+                DateTime startTime = DateTime.Now;
+
+                while (System.Diagnostics.Process.GetProcessesByName("qtum-qt").Length != 0)
                 {
                     Thread.Sleep(500);
+
+                    if((DateTime.Now.Ticks - startTime.Ticks) * TimeSpan.TicksPerSecond > 30)
+                    {
+                        processList = System.Diagnostics.Process.GetProcessesByName("qtum-qt");
+
+                        foreach (var process in processList)
+                        {
+                            process.Kill();
+                        }
+                    }
                 }
 
                 string cliPath = Config.QtumWalletPath;
@@ -104,24 +118,35 @@ namespace wallet_checker.Command
                     process.StandardInput.Write(command + Environment.NewLine);
                     process.StandardInput.Close();
 
-                    Logger.Log("Waiting for Qtum Wallet to run ...");
+                    Logger.Log("Waiting for Qtum Wallet to run ...\n");
 
-                    while (true)
+                    var waitRunTask = Task.Run(() =>
                     {
-                        processList = System.Diagnostics.Process.GetProcessesByName("qtum-qt");
-                        if (processList.Length > 0)
-                            break;
+                        while (true)
+                        {
+                            processList = System.Diagnostics.Process.GetProcessesByName("qtum-qt");
+                            if (processList.Length > 0)
+                                break;
 
-                        Thread.Sleep(1000);
-                    }
+                            Thread.Sleep(1000);
+                        }
+                    });
 
-                    while (true)
+                    await waitRunTask;
+
+                    var waitSyncTask = Task.Run(() =>
                     {
-                        if (string.IsNullOrEmpty(QtumHandler.GetHDMasterKeyId()) == false)
-                            break;
+                        while (true)
+                        {
+                            if (string.IsNullOrEmpty(QtumHandler.GetHDMasterKeyId(false)) == false)
+                                break;
 
-                        Thread.Sleep(1000);
+                            Thread.Sleep(1000);
+                        }
                     }
+                    );
+
+                    await waitSyncTask;
                 }
             }
             catch (Exception e)

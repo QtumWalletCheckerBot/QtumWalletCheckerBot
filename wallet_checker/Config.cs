@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,6 +21,7 @@ namespace wallet_checker
         public static string RPCUserName = "";
         public static string RPCPassword = "";
         public static bool StartupAutoStaking = true;
+        public static string OtpSecretKey = "";
 
         ///--------------------------------------------------------------------------------------------------------
         ///
@@ -37,10 +39,18 @@ namespace wallet_checker
                     JObject json = JObject.Parse(jsonStr);
                     Language = json["Language"].ToString().ToLower();
                     TelegramApiId = json["Telegram API ID"].ToString();
+                    OtpSecretKey = json["OtpSecretKey"].ToString();
                     QtumWalletPath = json["Qtum Wallet Path"].ToString();
                     RPCUserName = json["RPC UserName"].ToString();
                     RPCPassword = json["RPC Password"].ToString();
                     StartupAutoStaking = (bool)json["Startup Auto Staking"];
+
+                    
+                    if (string.IsNullOrEmpty(TelegramApiId))
+                    {
+                        Logger.Log("Config 파일에 TelegramApiId 값이 비어있습니다. API 키를 입력해주세요.");
+                        return false;
+                    }
 
                     if (string.IsNullOrEmpty(QtumWalletPath))
                         QtumWalletPath = System.Environment.CurrentDirectory;
@@ -53,7 +63,42 @@ namespace wallet_checker
             }
             catch(Exception e)
             {
-                Logger.Log(e.ToString());
+                Logger.Log( "Failed Load Config" + e.ToString());
+                return false;
+            }
+
+            return true;
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        public static bool Save()
+        {
+            try
+            {
+                using (StreamWriter file = new StreamWriter("Config.txt"))
+                {
+                    using (JsonTextWriter writer = new JsonTextWriter(file))
+                    {
+                        writer.Formatting = Formatting.Indented;
+
+                        JObject json = new JObject(
+                            new JProperty("Language", Language),
+                            new JProperty("Telegram API ID", TelegramApiId),
+                            new JProperty("OtpSecretKey", OtpSecretKey),
+                            new JProperty("Qtum Wallet Path", QtumWalletPath),
+                            new JProperty("RPC UserName", RPCUserName),
+                            new JProperty("RPC Password", RPCPassword),
+                            new JProperty("Startup Auto Staking", StartupAutoStaking)
+                            );
+
+                        json.WriteTo(writer);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Log( "Failed Save Config : " + e.ToString());
                 return false;
             }
 

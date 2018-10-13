@@ -16,8 +16,6 @@ namespace wallet_checker
 
         static private HashSet<long> userIdList = new HashSet<long>();
 
-        public delegate void UserProcessor(long userId);
-
         ///--------------------------------------------------------------------------------------------------------
         ///
         static public void AddUser(long id)
@@ -31,13 +29,25 @@ namespace wallet_checker
 
         ///--------------------------------------------------------------------------------------------------------
         ///
-        static public async Task ForeachAsync(UserProcessor processor)
+        static public async Task ForeachAsync(Func<long, Task> processor)
         {
-            foreach( var userId in userIdList)
+            foreach (var userId in userIdList)
             {
-                var task = Task.Run(()=>processor(userId));
+                Task task = processor.DynamicInvoke(userId) as Task;
                 await task;
             }
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        static public async Task ForeachSendMsg(string msg)
+        {
+            async Task sendProcessor(long userId)
+            {
+                await TelegramBot.Bot.SendTextMessageAsync(userId, msg);
+            }
+
+            await ForeachAsync(sendProcessor);
         }
 
         ///--------------------------------------------------------------------------------------------------------

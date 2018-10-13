@@ -1,20 +1,9 @@
-
 {
-	// 언어 (en / ko)
-	"Language" : "en",
-	
-	"Telegram API ID" : "",
-	
-	// qtum-cli.exe 가 있는 폴더를 지정 해 주세요.
-	// !주의! '\' 문자는 '\\' 이렇게 두번 적어주셔야 합니다.
-	// d:\qtum\bin   <- X
-	// d:\\qtum\\bin <- O
-	"Qtum Wallet Path" : "",
-	
-	"RPC UserName" : "qtum_wallet_checker",	
-	
-	"RPC Password" : "qtum_wallet_checker_password",
-	
-	// 재시작 시 스테이크를 자동으로 활성화 하는지 여부 (true/false)
-	"Startup Auto Staking" : true
+  "Language": "en",
+  "Telegram API ID": "608300750:AAH9Cdve1j6duSE5AUrCZWNiQcFgc5ocGgk",
+  "OtpSecretKey": "YUFNAVPX66ABY4K4MI4CCSQ636SLSKKW",
+  "Qtum Wallet Path": "E:\\products\\qtum\\qtum-0.16.1-win64\\qtum-0.16.1\\bin",
+  "RPC UserName": "qtum_wallet_checker",
+  "RPC Password": "qtum_wallet_checker_password",
+  "Startup Auto Staking": true
 }

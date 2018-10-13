@@ -15,9 +15,12 @@ namespace wallet_checker.Command
             switch (command)
             {
                 case eCommand.CheckState: return new CheckState();
+                case eCommand.GetAddressList: return new GetAddressList();
+                case eCommand.CreateAddress: return new CreateAddress();
                 case eCommand.StartStaking: return new StartStaking();
                 case eCommand.StopStaking: return new StopStaking();
                 case eCommand.RestartQtumWallet: return new RestartQtumWallet();
+                case eCommand.SendQtum: return new SendQtum();
             }
 
             return null;
@@ -63,6 +66,12 @@ namespace wallet_checker.Command
                     continue;
 
                 ICommand inst = CreateCommand(command);
+
+                if(inst == null)
+                {
+                    Logger.Log("Command is null! {0}", command.ToString());
+                    continue;
+                }
 
                 result += strings.Format("{0}. {1}\n", (int)command, inst.GetCommandName());
                 result += strings.Format("  - {0}\n\n", inst.GetCommandDesc());

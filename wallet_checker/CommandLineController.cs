@@ -9,7 +9,7 @@ namespace wallet_checker
 {
     ///-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///
-    public class Commmander
+    public class CommmandLineController
     {
         ///--------------------------------------------------------------------------------------------------------
         ///
@@ -17,7 +17,7 @@ namespace wallet_checker
 
         ///--------------------------------------------------------------------------------------------------------
         ///
-        public Commmander()
+        public CommmandLineController()
         {
             startInfo.FileName = @"cmd";
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;            // cmd창이 숨겨지도록 하기

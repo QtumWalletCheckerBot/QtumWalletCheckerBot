@@ -6,37 +6,41 @@ using System.Threading.Tasks;
 
 namespace wallet_checker.Command
 {
-    class CheckState : ICommand
+    class GetAddressList : ICommand
     {
+
         ///--------------------------------------------------------------------------------------------------------
         ///
-
         public override eCommand GetCommandType()
         {
-            return eCommand.CheckState;
+            return eCommand.GetAddressList;
         }
 
+        ///--------------------------------------------------------------------------------------------------------
+        ///
         public override string GetCommandName()
         {
-            return strings.GetString("확인");
+            return strings.GetString("주소 보기");
         }
 
+        ///--------------------------------------------------------------------------------------------------------
+        ///
         public override string GetCommandDesc()
         {
-            return strings.GetString("지갑의 상태를 확인합니다.");
+            return strings.GetString("지갑의 주소 리스트를 조회합니다.");
         }
 
         ///--------------------------------------------------------------------------------------------------------
         ///
         protected override async Task<bool> OnStart(long requesterId, string requesterName, DateTime requestTime, params object[] args)
         {
-            await SendMessage(requesterId, strings.Format("{0} 지갑을 확인하는 중 입니다.", requesterName));
-            
-            string response = await Task<string>.Run(() => MakeCheckResponse(requestTime));
+            await SendMessage(requesterId, strings.Format("{0} 주소 목록을 확인하는 중 입니다.", requesterName));
+
+            string response = await MakeResponse(requesterId, requestTime);
 
             await SendMessage(requesterId, response);
 
-            Logger.Log("지갑 확인 응답 완료.\n");
+            Logger.Log("주소 목록 확인 응답 완료.\n");
 
             IsCompleted = true;
 
@@ -45,20 +49,29 @@ namespace wallet_checker.Command
 
         ///--------------------------------------------------------------------------------------------------------
         /// 확인 요청에 대한 응답메세지 생성
-        private static string MakeCheckResponse(DateTime requestTime)
+        private async Task<string> MakeResponse(long requesterId, DateTime requestTime)
         {
             string msgDateStr = string.Format("{0:yyyy/MM/dd HH:mm:ss}", requestTime);
 
             Dictionary<string, double> balances = null;
 
-            string walletState = QtumHandler.GetInfo(out balances);
+            QtumHandler.GetInfo(out balances);
+
+            string addressListStr = "";
+
+            foreach (KeyValuePair<string, double> elem in balances)
+            {
+                await SendMessage(requesterId, elem.Key);
+                await SendMessage(requesterId, elem.Value.ToString());
+                addressListStr += string.Format("  {0} : {1}\n", elem.Key, elem.Value.ToString());
+            }
 
             var response = strings.Format(@"
  ---------------------------------
  요청 : {0}
  응답 : {1:yyyy/MM/dd HH:mm:ss}
 {2}
- ---------------------------------", msgDateStr, DateTime.Now, walletState);
+ ---------------------------------", msgDateStr, DateTime.Now, addressListStr);
 
             Logger.Log(response);
             Logger.Log("");

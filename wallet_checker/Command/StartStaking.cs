@@ -30,6 +30,10 @@ namespace wallet_checker.Command
         ///
         protected override async Task<bool> OnStart(long requesterId, string requesterName, DateTime requestTime, params object[] args)
         {
+            Logger.Log("채굴을 시작합니다.");
+
+            await SendMessage(requesterId, "");
+
             await SendMessage(requesterId, strings.Format("{0} 채굴을 시작합니다.", requesterName));
 
             bool invalidPassword = false;
@@ -45,12 +49,20 @@ namespace wallet_checker.Command
                 System.IO.File.Delete(PasswordManager.passwordFile);
                 await SendMessage(requesterId, strings.Format("잘못된 암호로 실패했습니다. 봇 프로그램에서 퀀텀 월렛 암호 설정을 확인 해주세요."));
             }
-            else
+            
+            Logger.Log("채굴 시작 응답 완료.\n");
+
+            if (invalidPassword == false)
             {
-                await SendMessage(requesterId, strings.GetString("프로그램에 등록된 패스워드가 퀀텀 지갑의 패스워드와 일치하지 않다면, 컨트롤에 실패하였을 수 있습니다.\n[1. 확인] 명령어로 정상적인 변경이 되었는지 확인 해 주세요.\n확인 후 정상적인 작동이 이뤄지지 않았다면, data.bin 파일을 지우고 올바른 패스워드를 다시 등록 해 주세요."));
+                Command.ICommand command = Command.CommandFactory.CreateCommand(Command.eCommand.CheckState);
+
+                if (command != null)
+                {
+                    await command.Process(-1, "", DateTime.Now);
+                }
             }
 
-            Logger.Log("채굴 시작 응답 완료.\n");
+            IsCompleted = true;
 
             return invalidPassword == false;
         }

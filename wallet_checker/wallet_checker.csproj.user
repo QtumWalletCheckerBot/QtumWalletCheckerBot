@@ -3,11 +3,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartArguments>
     </StartArguments>
-    <StartWorkingDirectory>E:\products\wallet_checker\source\wallet_checker\wallet_checker\work_dir\</StartWorkingDirectory>
+    <StartWorkingDirectory>E:\products\wallet_checker\github\QtumWalletCheckerBot\wallet_checker\work_dir\</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <StartArguments>
     </StartArguments>
-    <StartWorkingDirectory>E:\products\wallet_checker\source\wallet_checker\wallet_checker\work_dir\</StartWorkingDirectory>
+    <StartWorkingDirectory>E:\products\wallet_checker\github\QtumWalletCheckerBot\wallet_checker\work_dir\</StartWorkingDirectory>
   </PropertyGroup>
 </Project>

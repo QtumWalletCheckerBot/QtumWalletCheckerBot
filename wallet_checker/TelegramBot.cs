@@ -12,7 +12,7 @@ namespace wallet_checker
     {
         public static TelegramBotClient Bot = null;
 
-        public static void Initialize(EventHandler<MessageEventArgs> OnMessage, EventHandler<MessageEventArgs> OnMessageEdited, EventHandler<ReceiveErrorEventArgs> OnReceiveError)
+        public static async Task Initialize(EventHandler<MessageEventArgs> OnMessage, EventHandler<MessageEventArgs> OnMessageEdited, EventHandler<ReceiveErrorEventArgs> OnReceiveError)
         {
             Bot = new TelegramBotClient(Config.TelegramApiId);
 
@@ -21,7 +21,9 @@ namespace wallet_checker
             Bot.OnMessageEdited += OnMessageEdited;
             Bot.OnReceiveError += OnReceiveError;
 
-            var me = Bot.GetMeAsync().Result;
+            var getMe = Bot.GetMeAsync();
+
+            var me = await getMe;
 
             Console.Title = me.Username;
 

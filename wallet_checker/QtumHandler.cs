@@ -14,7 +14,7 @@ namespace wallet_checker
     {
         ///--------------------------------------------------------------------------------------------------------
         ///
-        static Commmander commander = new Commmander();
+        static CommmandLineController commandline = new CommmandLineController();
 
         ///--------------------------------------------------------------------------------------------------------
         ///
@@ -37,11 +37,11 @@ namespace wallet_checker
 
         ///--------------------------------------------------------------------------------------------------------
         ///
-        static public string GetHDMasterKeyId()
+        static public string GetHDMasterKeyId(bool bWriteFailLog = true)
         {
             JObject json = null;
 
-            string result = commander.Process("getwalletinfo");
+            string result = commandline.Process("getwalletinfo");
 
             if (TryParseJson(result, out json))
             {
@@ -56,7 +56,8 @@ namespace wallet_checker
             }
             else
             {
-                Logger.Log(result);
+                if(bWriteFailLog)
+                    Logger.Log(result);
             }
 
             return "";
@@ -64,8 +65,10 @@ namespace wallet_checker
 
         ///--------------------------------------------------------------------------------------------------------
         ///
-        static public string GetInfo()
+        static public string GetInfo(out Dictionary<string, double> outBalances)
         {
+            outBalances = new Dictionary<string, double>();
+
             string result;
 
             try
@@ -74,7 +77,7 @@ namespace wallet_checker
 
                 JObject getStakingInfoJson = null;
 
-                if(TryParseJson(commander.Process("getstakinginfo"), out getStakingInfoJson))
+                if(TryParseJson(commandline.Process("getstakinginfo"), out getStakingInfoJson))
                 {
                     try
                     {
@@ -85,7 +88,7 @@ namespace wallet_checker
                     }
                 }
 
-                string getInfoResult = commander.Process("-getinfo");
+                string getInfoResult = commandline.Process("-getinfo");
 
                 result = getInfoResult;
 
@@ -95,7 +98,7 @@ namespace wallet_checker
                 {
                     string stakingStateStr = "OFF";
 
-                    if((ulong)getInfoJson["unlocked_until"] != 0)
+                    if ((ulong)getInfoJson["unlocked_until"] != 0)
                     {
                         stakingStateStr = "ON";
 
@@ -123,13 +126,13 @@ namespace wallet_checker
                         , (uint)getInfoJson["connections"]
                     );
 
-                    string listunspentResult = "{\n AddressList : " + commander.Process("listunspent") + "\n}";
+                    string listunspentResult = "{\n AddressList : " + commandline.Process("listunspent") + "\n}";
 
                     JObject listunspentJson = null;
 
                     if (TryParseJson(listunspentResult, out listunspentJson))
                     {
-                        Dictionary<string, double> balances = new Dictionary<string, double>();
+                        Dictionary<string, double> balances = outBalances;
 
                         JToken addressList = listunspentJson["AddressList"];
                         for (int i = 0; i < addressList.Count(); ++i)
@@ -137,32 +140,51 @@ namespace wallet_checker
                             string address = addressList[i]["address"].ToString();
                             string amount = addressList[i]["amount"].ToString();
 
-                            double balance = 0;
-
-                            balances.TryGetValue(address, out balance);
-
-                            balance += Convert.ToDouble(amount);
+                            double balance = Convert.ToDouble(amount);
 
                             balances[address] = balance;
                         }
 
                         int accountCount = 0;
 
-                        foreach(var pair in balances)
+                        if (balances.Count == 0)
                         {
-                            string address = pair.Key;
-                            double amount = pair.Value;
-
-                            if (accountCount++ > 0)
-                                result += "\n\n";
-
-                            result += strings.Format("    - 주소 : {0}\n", address);
-                            result += strings.Format("    - 수량 : {0} Qtum", amount);
+                            result += "    - empty";
                         }
+                        else
+                        {
+                            foreach (var pair in balances)
+                            {
+                                string address = pair.Key;
+                                double amount = pair.Value;
+
+                                if (accountCount++ > 0)
+                                    result += "\n\n";
+
+                                result += strings.Format("    - 주소 : {0}\n", address);
+                                result += strings.Format("    - 수량 : {0} Qtum", amount);
+                            }
+                        }                        
                     }
                     else
                     {
                         result += listunspentResult + "\n";
+                    }
+
+                    string listAccountResult = "{\n AddressList : " + commandline.Process("getaddressesbyaccount \"\"") + "\n}";
+                    JObject listAccountJson = null;
+
+                    if (TryParseJson(listAccountResult, out listAccountJson))
+                    {
+                        JToken addressList = listAccountJson["AddressList"];
+                        for (int i = 0; i < addressList.Count(); ++i)
+                        {
+                            string address = addressList[i].ToString();
+                            if (outBalances.ContainsKey(address) == false)
+                            {
+                                outBalances[address] = 0;
+                            }
+                        }
                     }
                 }
             }
@@ -176,6 +198,102 @@ namespace wallet_checker
 
         ///--------------------------------------------------------------------------------------------------------
         ///
+        static public double GetBalance()
+        {
+            try
+            {
+                string resultStr = commandline.Process("getbalance \"\"").Trim();
+
+                double balance = 0;
+
+                if (double.TryParse(resultStr, out balance))
+                    return balance;
+            }
+            catch (Exception e)
+            {
+                Logger.Log("failed GetBalance.\n" + e.ToString());
+            }
+
+            return 0;
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        static public string CreateNewAddress()
+        {
+            return commandline.Process("getnewaddress \"\"").Trim();
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        static public bool IsValidateAddress(string address)
+        {
+            if (string.IsNullOrEmpty(address))
+                return false;
+
+            try
+            {
+                string resultStr = commandline.Process(string.Format("validateaddress \"{0}\"", address)).Trim();
+
+                JObject json = null;
+
+                if (TryParseJson(resultStr, out json))
+                {
+                    return (bool)json["isvalid"];
+                }
+            }
+            catch(Exception e)
+            {
+                Logger.Log("failed check validate adress. " + address + "\n" + e.ToString());
+
+                return false;
+            }
+
+            return false;
+        }
+
+        static public bool IsStakingState()
+        {
+            bool isStakingState = false;
+
+            try
+            {
+                JObject getStakingInfoJson = null;
+
+                if (TryParseJson(commandline.Process("getstakinginfo"), out getStakingInfoJson))
+                {
+                    try
+                    {
+                        isStakingState = (bool)getStakingInfoJson["staking"];
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+
+                if(isStakingState == false)
+                {
+                    string getInfoResult = commandline.Process("-getinfo");
+
+                    JObject getInfoJson = null;
+
+                    if (TryParseJson(getInfoResult, out getInfoJson))
+                    {
+                        if ((ulong)getInfoJson["unlocked_until"] != 0)
+                            isStakingState = true;
+                    }
+                }
+            }
+            catch(Exception)
+            {
+                isStakingState = false;
+            }            
+
+            return isStakingState;
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
         static public string StartSaking()
         {
             PasswordManager pwdManager = new PasswordManager();
@@ -184,7 +302,7 @@ namespace wallet_checker
             if (pwd == null)
                 return strings.GetString("패스워드 오류");
 
-            string cmdResult = commander.Process(string.Format("walletpassphrase \"{0}\" 99999999 true", pwd));
+            string cmdResult = commandline.Process(string.Format("walletpassphrase \"{0}\" 99999999 true", pwd));
 
             return cmdResult.Trim();
         }
@@ -199,7 +317,30 @@ namespace wallet_checker
             if (pwd == null)
                 return strings.GetString("패스워드 오류");
 
-            string cmdResult = commander.Process(string.Format("walletpassphrase \"{0}\" 0 true", pwd));
+            string cmdResult = commandline.Process(string.Format("walletpassphrase \"{0}\" 0 true", pwd));
+
+            return cmdResult.Trim();
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        static public string Send(string destAddress, double amount)
+        {
+            if (amount < 0)
+                return strings.GetString("수량이 부족합니다.");
+
+            if (IsValidateAddress(destAddress) == false)
+                return strings.GetString("유효하지 않은 주소입니다.");
+
+            PasswordManager pwdManager = new PasswordManager();
+            string pwd = pwdManager.GetPassword();
+
+            if (string.IsNullOrEmpty(pwd))
+                return strings.GetString("패스워드 오류");
+
+            string checkPasswordResult = commandline.Process(string.Format("walletpassphrase \"{0}\"", pwd));
+
+            string cmdResult = commandline.Process(string.Format("sendtoaddress \"{0}\" {1}", destAddress, amount));
 
             return cmdResult.Trim();
         }
