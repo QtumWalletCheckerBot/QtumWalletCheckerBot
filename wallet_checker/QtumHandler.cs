@@ -142,7 +142,10 @@ namespace wallet_checker
 
                             double balance = Convert.ToDouble(amount);
 
-                            balances[address] = balance;
+                            if (balances.ContainsKey(address) == false)
+                                balances[address] = 0;
+
+                            balances[address] += balance;
                         }
 
                         int accountCount = 0;
@@ -221,7 +224,7 @@ namespace wallet_checker
         ///
         static public string CreateNewAddress()
         {
-            return commandline.Process("getnewaddress \"\"").Trim();
+            return commandline.Process("getnewaddress \"\" \"bech32\"").Trim();
         }
 
         ///--------------------------------------------------------------------------------------------------------
@@ -338,9 +341,16 @@ namespace wallet_checker
             if (string.IsNullOrEmpty(pwd))
                 return strings.GetString("패스워드 오류");
 
-            string checkPasswordResult = commandline.Process(string.Format("walletpassphrase \"{0}\"", pwd));
+            bool bStaking = IsStakingState();
 
-            string cmdResult = commandline.Process(string.Format("sendtoaddress \"{0}\" {1}", destAddress, amount));
+            commandline.Process(string.Format("walletpassphrase \"{0}\" 30 false", pwd));
+
+            string cmdResult = commandline.Process(string.Format("sendtoaddress \"{0}\" {1} \"\" \"\" true", destAddress, amount));
+
+            if (bStaking)
+                commandline.Process(string.Format("walletpassphrase \"{0}\" 99999999 true", pwd));
+            else
+                commandline.Process(string.Format("walletpassphrase \"{0}\" 0 true", pwd));
 
             return cmdResult.Trim();
         }

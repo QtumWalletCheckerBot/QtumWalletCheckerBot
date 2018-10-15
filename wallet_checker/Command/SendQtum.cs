@@ -52,12 +52,12 @@ namespace wallet_checker.Command
         ///
         protected override async Task<bool> OnStart(long requesterId, string requesterName, DateTime requestTime, params object[] args)
         {
-            if(QtumHandler.IsStakingState())
-            {
-                await SendMessage(requesterId, strings.GetString("채굴 상태에서는 전송 할 수 없습니다."));
-                IsCompleted = true;
-                return true;
-            }
+            //if(QtumHandler.IsStakingState())
+            //{
+            //    await SendMessage(requesterId, strings.GetString("채굴 상태에서는 전송 할 수 없습니다."));
+            //    IsCompleted = true;
+            //    return true;
+            //}
 
             commandState = eSendCommandState.InputWaitOtp;
 
