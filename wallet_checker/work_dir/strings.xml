@@ -215,4 +215,43 @@
   <data name ="제한시간 초과">
 	<en>Timeout exceeded.</en>
   </data>
+  <data name ="원격 커맨드 라인">
+	<en>Remote CommandLine.</en>
+  </data>
+  <data name ="원격으로 커맨드 라인을 입력합니다.">
+	<en>Enter the command line remotely.</en>
+  </data>
+  <data name ="원격 커맨드 라인 응답 완료.\n">
+	<en>Remote command line response complete.</en>
+  </data>
+  <data name ="지갑 백업">
+	<en>Backup Wallet</en>
+  </data>
+  <data name ="지갑 백업 파일을 생성합니다.">
+	<en>Create a wallet backup file.</en>
+  </data>
+  <data name ="지갑 백업 응답 완료.\n">
+	<en>Wallet backup response completed.</en>
+  </data>
+  <data name ="지갑 복구">
+	<en>Restore Wallet</en>
+  </data>
+  <data name ="지갑을 백업 파일로 복구 합니다.">
+	<en>Recover Wallet from backup file.</en>
+  </data>
+  <data name ="지갑 복구 응답 완료.\n">
+	<en>Wallet restore response completed.</en>
+  </data>
+  <data name ="백업 파일이 없습니다.">
+	<en>No backup file found.</en>
+  </data>
+  <data name ="백업 파일을 숫자로 선택하세요.">
+	<en>Select the number of backup files.</en>
+  </data>
+  <data name ="잘못된 번호 입니다.">
+	<en>Invalid number.</en>
+  </data>
+  <data name ="지갑을 복구하는 중 입니다....">
+	<en>Recovering your wallet....</en>
+  </data>
 </root>

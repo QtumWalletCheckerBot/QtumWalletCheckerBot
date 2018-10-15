@@ -100,7 +100,7 @@ namespace wallet_checker.Command
 
                     if(OtpChecker.CheckOtp(otpStr))
                     {
-                        string response = await MakeResponse(requesterId, message.Date);
+                        string response = await MakeResponse(requesterId, DateTimeHandler.ToKoreaTime(message.Date));
 
                         await SendMessage(requesterId, response);
                     }
@@ -133,7 +133,7 @@ namespace wallet_checker.Command
  요청 : {0}
  응답 : {1:yyyy/MM/dd HH:mm:ss}
 {2}
- ---------------------------------", msgDateStr, DateTime.Now, newAddress);
+ ---------------------------------", msgDateStr, DateTimeHandler.GetKoreaNow(), newAddress);
 
             Logger.Log(response);
             Logger.Log("");

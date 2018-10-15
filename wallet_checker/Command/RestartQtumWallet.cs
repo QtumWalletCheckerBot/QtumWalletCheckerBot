@@ -11,6 +11,20 @@ namespace wallet_checker.Command
     public class RestartQtumWallet : ICommand
     {
         ///--------------------------------------------------------------------------------------------------------
+        ///
+        enum eCommandState
+        {
+            Ready,
+            InputWaitOtp,
+        }
+
+        private eCommandState commandState = eCommandState.Ready;
+        long otpWaitUserId = 0;
+        DateTime waitStartTime = DateTime.MinValue;
+        object[] restartParams = null;
+        bool success = false;
+
+        ///--------------------------------------------------------------------------------------------------------
         /// 
 
         public override eCommand GetCommandType()
@@ -32,31 +46,110 @@ namespace wallet_checker.Command
         /// 
         protected override async Task<bool> OnStart(long requesterId, string requesterName, DateTime requestTime, params object[] args)
         {
-            await SendMessage(requesterId, strings.Format("{0} 지갑을 재기동합니다.", requesterName));
-            
-            bool success = await Restart();
+            commandState = eCommandState.InputWaitOtp;
 
-            string response = strings.Format("재기동 완료. 결과 : {0}", success ? "Success" : "Failed");
+            otpWaitUserId = requesterId;
 
-            await SendMessage(requesterId, response);
+            waitStartTime = DateTime.Now;
+
+            restartParams = args;
+
+            success = false;
+
+            await SendMessage(requesterId, strings.GetString("Otp 인증 번호를 입력 하세요."));
+
+            return true;
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        protected override void OnFinish()
+        {
+            base.OnFinish();
 
             Logger.Log("재기동 완료. {0}\n", success ? "Success" : "Failed");
 
-            if(success && Config.StartupAutoStaking)
+            commandState = eCommandState.Ready;
+
+            waitStartTime = DateTime.MinValue;
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        public override async Task OnUpdate()
+        {
+            await base.OnUpdate();
+
+            if (commandState == eCommandState.Ready)
+                return;
+
+            if (waitStartTime != DateTime.MinValue)
             {
-                ICommand autoStaking = CommandFactory.CreateCommand(eCommand.StartStaking);
-                if (autoStaking != null)
-                    return await autoStaking.Process(requesterId, requesterName, DateTime.Now, args);
+                if ((DateTime.Now - waitStartTime).Ticks / TimeSpan.TicksPerSecond > 60.0f)
+                {
+                    Logger.Log("재기동 완료. {0}\n", success ? "Success" : "Failed");
+
+                    IsCompleted = true;
+
+                    await SendMessage(otpWaitUserId, strings.GetString("제한시간 초과"));
+                }
             }
+        }
 
-            IsCompleted = true;
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        public override async Task OnMessage(Telegram.Bot.Types.Message message)
+        {
+            await base.OnMessage(message);
 
-            return success;
+            string msg = message.Text.Trim();
+
+            long requesterId = message.Chat.Id;
+
+            if (requesterId != otpWaitUserId)
+                return;
+
+            switch (commandState)
+            {
+                case eCommandState.InputWaitOtp:
+                    {
+                        IsCompleted = true;
+
+                        string otpStr = message.Text.Trim();
+
+                        if (OtpChecker.CheckOtp(otpStr))
+                        {
+                            string requesterName = message.Chat.Username;
+
+                            await SendMessage(requesterId, strings.Format("{0} 지갑을 재기동합니다.", requesterName));
+
+                            bool success = await Restart(restartParams);
+
+                            string response = strings.Format("재기동 완료. 결과 : {0}", success ? "Success" : "Failed");
+
+                            await SendMessage(requesterId, response);
+
+                            Logger.Log("재기동 완료. {0}\n", success ? "Success" : "Failed");
+
+                            if (success && Config.StartupAutoStaking)
+                            {
+                                ICommand autoStaking = CommandFactory.CreateCommand(eCommand.StartStaking);
+                                if (autoStaking != null)
+                                    await autoStaking.Process(requesterId, requesterName, DateTimeHandler.GetKoreaNow());
+                            }
+                        }
+                        else
+                        {
+                            await SendMessage(requesterId, strings.GetString("Otp 인증에 실패 했습니다."));
+                        }
+                    }
+                    break;
+            }
         }
 
         ///--------------------------------------------------------------------------------------------------------
         /// 
-        public static async Task<bool> Restart()
+        public static async Task<bool> Restart(params object[] args)
         {
             Logger.Log("RestartQtumWallet");
 
@@ -93,6 +186,15 @@ namespace wallet_checker.Command
                 string rpcUser = Config.RPCUserName;
                 string rpcPwd = Config.RPCPassword;
                 string command = string.Format(@"{0}\qtum-qt.exe -server -rpcuser={1} -rpcpassword={2} -rpcallowip=127.0.0.1", cliPath, rpcUser, rpcPwd);
+
+                for(int i=1; args != null && i <args.Length; ++i)
+                {
+                    object arg = args[i];
+                    if(arg != null && string.IsNullOrEmpty(arg.ToString().Trim()) == false)
+                    {
+                        command += " " + arg.ToString().Trim();
+                    }
+                }
 
                 using (Process process = new Process())
                 {

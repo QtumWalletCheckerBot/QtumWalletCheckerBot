@@ -21,6 +21,9 @@ namespace wallet_checker.Command
                 case eCommand.StopStaking: return new StopStaking();
                 case eCommand.RestartQtumWallet: return new RestartQtumWallet();
                 case eCommand.SendQtum: return new SendQtum();
+                case eCommand.RemoteCommandLine: return new RemoteCommandLine();
+                case eCommand.BackupWallet: return new BackupWallet();
+                case eCommand.RestoreWallet: return new RestoreWallet();
             }
 
             return null;
@@ -35,8 +38,10 @@ namespace wallet_checker.Command
 
             var commands = System.Enum.GetValues(typeof(eCommand));
 
-            foreach (eCommand command in commands)
+            for (int i=commands.Length-1; i>=0; --i)
             {
+                eCommand command = (eCommand)commands.GetValue(i);
+
                 if (command == eCommand.None)
                     continue;
 

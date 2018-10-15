@@ -56,16 +56,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLineController.cs" />
+    <Compile Include="Command\BackupWallet.cs" />
     <Compile Include="Command\CheckState.cs" />
+    <Compile Include="Command\RemoteCommandLine.cs" />
     <Compile Include="Command\CreateAddress.cs" />
     <Compile Include="Command\GetAddressList.cs" />
     <Compile Include="Command\ICommand.cs" />
     <Compile Include="Command\CommandFactory.cs" />
     <Compile Include="Command\RestartQtumWallet.cs" />
+    <Compile Include="Command\RestoreWallet.cs" />
     <Compile Include="Command\SendQtum.cs" />
     <Compile Include="Command\StartStaking.cs" />
     <Compile Include="Command\StopStaking.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="DateTimeHandler.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="OtpChecker.cs" />
     <Compile Include="PasswordManager.cs" />

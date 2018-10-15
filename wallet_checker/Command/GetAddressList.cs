@@ -71,7 +71,7 @@ namespace wallet_checker.Command
  요청 : {0}
  응답 : {1:yyyy/MM/dd HH:mm:ss}
 {2}
- ---------------------------------", msgDateStr, DateTime.Now, addressListStr);
+ ---------------------------------", msgDateStr, DateTimeHandler.GetKoreaNow(), addressListStr);
 
             Logger.Log(response);
             Logger.Log("");

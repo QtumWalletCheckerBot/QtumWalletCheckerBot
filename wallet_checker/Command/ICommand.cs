@@ -16,6 +16,9 @@ namespace wallet_checker.Command
         StopStaking,
         RestartQtumWallet,
         SendQtum,
+        RemoteCommandLine,
+        BackupWallet,
+        RestoreWallet,
     }
     
 
@@ -64,19 +67,6 @@ namespace wallet_checker.Command
 
             UserList.AddUser(requesterId);
 
-            try
-            {
-                if (requestTime.Kind != DateTimeKind.Local)
-                {
-                    TimeZoneInfo koreaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Korea Standard Time");
-                    requestTime = TimeZoneInfo.ConvertTimeFromUtc(requestTime, koreaTimeZone);
-                }
-            }
-            catch (Exception)
-            {
-                IsCompleted = true;
-            }
-
             LogStartCommand(GetCommandType().ToString(), requesterId, requesterName);
             
             return await OnStart(requesterId, requesterName, requestTime, args);
@@ -115,7 +105,7 @@ namespace wallet_checker.Command
         ///
         protected static void LogStartCommand(string cmdName, long requesterId, string requesterName)
         {
-            DateTime recvTime = DateTime.Now;
+            DateTime recvTime = DateTimeHandler.GetKoreaNow();
 
             Logger.Log("///////////////////////////////////////////////////////////////////////////////////////");
             Logger.Log("//");

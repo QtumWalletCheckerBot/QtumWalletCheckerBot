@@ -104,7 +104,7 @@ namespace wallet_checker
         private static async Task BroadcastStartupNotify()
         {
             await UserList.ForeachSendMsg("//////////////////////////////////////////////////////");
-            await UserList.ForeachSendMsg(strings.Format("퀀텀 지갑이 구동되었습니다.  {0}", DateTime.Now));
+            await UserList.ForeachSendMsg(strings.Format("퀀텀 지갑이 구동되었습니다.  {0}", DateTimeHandler.GetKoreaNow()));
             await UserList.ForeachSendMsg(Command.CommandFactory.GetCommandHelpString());
         }
 
@@ -122,7 +122,7 @@ namespace wallet_checker
 
                 if(command != null)
                 {
-                    await command.Process(-1, "", DateTime.Now);
+                    await command.Process(-1, "", DateTimeHandler.GetKoreaNow());
                 }
             }
         }
@@ -155,7 +155,8 @@ namespace wallet_checker
                 return;
             }
 
-            string cmdStr = message.Text.Replace("-", "").Trim();
+            //string cmdStr = message.Text.Replace("-", "").Trim();
+            string cmdStr = message.Text.Trim();
 
             Command.eCommand commandType = Command.CommandFactory.ParseCommand(cmdStr);
 
@@ -167,7 +168,7 @@ namespace wallet_checker
 
                 string[] args = cmdStr.Split(' ');
 
-                bool success = await currentCommand.Process(message.Chat.Id, message.Chat.Username, message.Date, args);
+                bool success = await currentCommand.Process(message.Chat.Id, message.Chat.Username, DateTimeHandler.ToKoreaTime(message.Date), args);
             }
             else
             {

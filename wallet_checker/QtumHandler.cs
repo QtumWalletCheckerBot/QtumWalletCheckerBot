@@ -354,6 +354,31 @@ namespace wallet_checker
 
             return cmdResult.Trim();
         }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        static public string CommandLine(string commandLineStr)
+        {
+            string cmdResult = commandline.Process(commandLineStr);
+
+            return cmdResult;
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        static public string BackupWallet()
+        {
+            string fileName = string.Format("{0:yyyy_MM_dd-HH_mm_ss}.dat", DateTimeHandler.GetKoreaNow());
+
+            string cmdResult = commandline.Process(string.Format("backupwallet \"./backups/{0}\"", fileName));
+
+            return cmdResult +"\n" + fileName;
+        }
+
+        static public string RestoreWallet(string filePath)
+        {
+            return "지갑 복원은 아직 구현되지 않았습니다.";
+        }
     }
     ///-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
