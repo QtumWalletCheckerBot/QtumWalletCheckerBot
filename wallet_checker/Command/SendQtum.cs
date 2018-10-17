@@ -15,7 +15,8 @@ namespace wallet_checker.Command
         {
             Ready,
             InputWaitOtp,
-            InputWaitAddress,
+            InputWaitSendAddress,
+            InputWaitReceiveAddress,
             InputWaitAmount,
             InputWaitConfirm,
             Send,
@@ -24,6 +25,8 @@ namespace wallet_checker.Command
         private eSendCommandState commandState = eSendCommandState.Ready;
         long otpWaitUserId = 0;
         DateTime waitStartTime = DateTime.MinValue;
+        Dictionary<string, double> myAddressList = new Dictionary<string, double>();
+        string myAddress;
         string destAdress;
         double destAmount = 0;
 
@@ -57,15 +60,31 @@ namespace wallet_checker.Command
             //    await SendMessage(requesterId, strings.GetString("채굴 상태에서는 전송 할 수 없습니다."));
             //    IsCompleted = true;
             //    return true;
-            //}
+            //}            
 
-            commandState = eSendCommandState.InputWaitOtp;
+            myAddress = "";
+            destAdress = "";
 
-            otpWaitUserId = requesterId;
+            myAddressList.Clear();
 
-            waitStartTime = DateTime.Now;
+            QtumHandler.GetInfo(out myAddressList);
 
-            await SendMessage(requesterId, strings.GetString("Otp 인증 번호를 입력 하세요."));
+            if (myAddressList.Count == 0 || QtumHandler.GetBalance() == 0)
+            {
+                IsCompleted = true;
+
+                await SendMessage(requesterId, strings.GetString("지갑이 비어있습니다."));
+            }
+            else
+            {
+                commandState = eSendCommandState.InputWaitOtp;
+
+                otpWaitUserId = requesterId;
+
+                waitStartTime = DateTime.Now;
+
+                await SendMessage(requesterId, strings.GetString("Otp 인증 번호를 입력 하세요."));
+            }            
 
             return true;
         }
@@ -128,11 +147,22 @@ namespace wallet_checker.Command
 
                         if (OtpChecker.CheckOtp(otpStr))
                         {
-                            commandState = eSendCommandState.InputWaitAddress;
+                            commandState = eSendCommandState.InputWaitSendAddress;
 
                             waitStartTime = DateTime.Now;
 
-                            await SendMessage(requesterId, strings.GetString("상대방의 퀀텀 주소를 입력하세요."));
+                            string sendMsg = strings.GetString("사용 할 본인의 주소를 번호로 선택하세요.");
+
+                            sendMsg += "\n0. " + strings.GetString("자동으로 선택");
+
+                            int num = 1;
+                            foreach(var pair in myAddressList)
+                            {
+                                sendMsg += string.Format("\n{0}. {1} : {2}", num, pair.Key, pair.Value);
+                                ++num;
+                            }
+
+                            await SendMessage(requesterId, sendMsg);
                         }
                         else
                         {
@@ -143,17 +173,74 @@ namespace wallet_checker.Command
                     }
                     break;
 
-                case eSendCommandState.InputWaitAddress:
+                case eSendCommandState.InputWaitSendAddress:
                     {
-                        if( QtumHandler.IsValidateAddress(msg))
+                        string[] args = msg.Split(' ');
+                        int addressNum = 0;
+                        if (args.Length <= 0 || int.TryParse(args[0], out addressNum) == false || addressNum < 0 || addressNum > myAddressList.Count)
+                        {
+                            IsCompleted = true;
+
+                            await SendMessage(requesterId, strings.GetString("유효하지 않은 주소입니다."));
+                        }
+                        else
+                        {
+                            if(addressNum == 0)
+                                myAddress = ""; // 자동이면 주소가 없습니다.
+                            else
+                                myAddress = myAddressList.Keys.ToArray()[addressNum - 1];
+
+                            if (string.IsNullOrEmpty(myAddress) || QtumHandler.IsValidateAddress(myAddress))
+                            {
+                                commandState = eSendCommandState.InputWaitReceiveAddress;
+
+                                waitStartTime = DateTime.Now;
+
+                                await SendMessage(requesterId, strings.GetString("상대방의 퀀텀 주소를 입력하세요."));
+                            }
+                            else
+                            {
+                                IsCompleted = true;
+
+                                await SendMessage(requesterId, strings.GetString("유효하지 않은 주소입니다."));
+                            }
+                        }                        
+                    }
+                    break;
+
+                case eSendCommandState.InputWaitReceiveAddress:
+                    {
+                        bool invalidMyAddress = false;
+
+                        double myBalance = 0;
+
+                        if (string.IsNullOrEmpty(myAddress) == false && myAddressList.TryGetValue(myAddress, out myBalance) == false)
+                        {
+                            invalidMyAddress = true;
+                        }
+
+                        if(invalidMyAddress == false && QtumHandler.IsValidateAddress(msg))
                         {
                             destAdress = msg;
 
                             commandState = eSendCommandState.InputWaitAmount;
 
-                            waitStartTime = DateTime.Now;
+                            waitStartTime = DateTime.Now;                            
 
-                            await SendMessage(requesterId, strings.GetString("보낼 수량을 입력하세요."));
+                            if(string.IsNullOrEmpty(myAddress) || myAddressList.TryGetValue(myAddress, out myBalance) == false)
+                            {
+                                myBalance = QtumHandler.GetBalance();
+                            }
+                            else
+                            {
+                                myBalance = myAddressList[myAddress];
+                            }
+
+                            string sendMsg = strings.GetString("보낼 수량을 입력하세요.");
+
+                            sendMsg += "\n" + strings.Format("가능 수량 {0}", myAddress + " " + myBalance);
+
+                            await SendMessage(requesterId, sendMsg);
                         }
                         else
                         {
@@ -173,7 +260,12 @@ namespace wallet_checker.Command
 
                             commandState = eSendCommandState.InputWaitConfirm;
 
-                            string str = strings.Format("받는 주소 : {0}", destAdress) + "\n" + strings.Format("보낼 수량 : {0}", destAmount);
+                            string myAddressStr = myAddress;
+
+                            if (string.IsNullOrEmpty(myAddressStr))
+                                myAddressStr = strings.GetString("자동으로 선택");
+
+                            string str = strings.Format("나의 주소 : {0}", myAddressStr) + "\n" + strings.Format("받는 주소 : {0}", destAdress) + "\n" + strings.Format("보낼 수량 : {0}", destAmount);
                             str += "\n" + strings.Format("정말 진행 하시려면 숫자 1을 입력하세요.");
 
                             waitStartTime = DateTime.Now;
@@ -198,15 +290,15 @@ namespace wallet_checker.Command
 
                             waitStartTime = DateTime.MinValue;
 
-                            string resultErr = QtumHandler.Send(destAdress, destAmount);
+                            string result = QtumHandler.Send(destAdress, destAmount);
 
-                            if (string.IsNullOrEmpty(resultErr))
+                            if (string.IsNullOrEmpty(result) == false)
                             {
+                                await SendMessage(requesterId, "tx :\nhttps://explorer.qtum.org/tx/" + result);
                                 await SendMessage(requesterId, strings.GetString("보내기 응답 완료.\n"));
                             }
                             else
                             {
-                                await SendMessage(requesterId, resultErr);
                                 await SendMessage(requesterId, strings.GetString("보내기에 실패했습니다."));
                             }                            
 

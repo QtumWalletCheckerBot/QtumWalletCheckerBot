@@ -164,8 +164,14 @@
   <data name="보낼 수량을 입력하세요.">
 	<en>Please enter quantity to send.</en>
   </data>
+  <data name="가능 수량 {0}">
+	<en>Available quantity {0}</en>
+  </data>
   <data name="수량이 부족합니다.">
 	<en>The remaining quantity is insufficient.</en>
+  </data>
+  <data name="나의 주소 : {0}">
+	<en>my address: {0}</en>
   </data>
   <data name="받는 주소 : {0}">
 	<en>Incoming address: {0}</en>
@@ -253,5 +259,14 @@
   </data>
   <data name ="지갑을 복구하는 중 입니다....">
 	<en>Recovering your wallet....</en>
+  </data>
+  <data name ="지갑이 비어있습니다.">
+	<en>Wallet is Empty.</en>
+  </data>
+  <data name ="사용 할 본인의 주소를 번호로 선택하세요.">
+	<en>Select the number of your address to use.</en>
+  </data>
+  <data name ="자동으로 선택">
+	<en>Auto Select</en>
   </data>
 </root>
