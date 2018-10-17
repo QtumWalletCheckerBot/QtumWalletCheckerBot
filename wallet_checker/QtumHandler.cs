@@ -327,10 +327,13 @@ namespace wallet_checker
 
         ///--------------------------------------------------------------------------------------------------------
         ///
-        static public string Send(string destAddress, double amount)
+        static public string Send(string myAddress, string destAddress, double amount)
         {
             if (amount < 0)
                 return strings.GetString("수량이 부족합니다.");
+
+            if (string.IsNullOrEmpty(myAddress) == false && IsValidateAddress(myAddress) == false)
+                return strings.GetString("유효하지 않은 주소입니다.");
 
             if (IsValidateAddress(destAddress) == false)
                 return strings.GetString("유효하지 않은 주소입니다.");
@@ -345,7 +348,12 @@ namespace wallet_checker
 
             commandline.Process(string.Format("walletpassphrase \"{0}\" 30 false", pwd));
 
-            string cmdResult = commandline.Process(string.Format("sendtoaddress \"{0}\" {1} \"\" \"\" true", destAddress, amount));
+            string cmdResult = "";
+
+            if(string.IsNullOrEmpty(myAddress))
+                cmdResult = commandline.Process(string.Format("sendtoaddress \"{0}\" {1} \"\" \"\" true", destAddress, amount));
+            else
+                cmdResult = commandline.Process(string.Format("sendtoaddress \"{0}\" {1} \"\" \"\" true null null \"\" \"{2}\"", destAddress, amount, myAddress));
 
             if (bStaking)
                 commandline.Process(string.Format("walletpassphrase \"{0}\" 99999999 true", pwd));

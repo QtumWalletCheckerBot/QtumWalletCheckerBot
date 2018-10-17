@@ -290,7 +290,7 @@ namespace wallet_checker.Command
 
                             waitStartTime = DateTime.MinValue;
 
-                            string result = QtumHandler.Send(destAdress, destAmount);
+                            string result = QtumHandler.Send(myAddress, destAdress, destAmount);
 
                             if (string.IsNullOrEmpty(result) == false)
                             {
