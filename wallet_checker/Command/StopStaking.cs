@@ -54,7 +54,7 @@ namespace wallet_checker.Command
 
                 if (command != null)
                 {
-                    await command.Process(-1, "", DateTimeHandler.GetKoreaNow());
+                    await command.Process(-1, "", DateTimeHandler.GetTimeZoneNow());
                 }
             }
 
@@ -81,7 +81,7 @@ namespace wallet_checker.Command
  응답 : {1:yyyy/MM/dd HH:mm:ss}
  결과 : {2}
  ---------------------------------"
-           , msgDateStr, DateTimeHandler.GetKoreaNow(), resultStr.Count() == 0 ? "Success" : resultStr);
+           , msgDateStr, DateTimeHandler.GetTimeZoneNow(), resultStr.Count() == 0 ? "Success" : resultStr);
 
             Logger.Log(response);
             Logger.Log("");

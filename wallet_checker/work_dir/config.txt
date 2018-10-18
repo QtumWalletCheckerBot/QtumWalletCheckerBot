@@ -1,9 +1,10 @@
 {
   "Language": "en",
-  "Telegram API ID": "608300750:AAH9Cdve1j6duSE5AUrCZWNiQcFgc5ocGgk",
-  "OtpSecretKey": "YUFNAVPX66ABY4K4MI4CCSQ636SLSKKW",
+  "Telegram API ID": "",
+  "OtpSecretKey": "",
   "Qtum Wallet Path": "E:\\products\\qtum\\qtum-0.16.1-win64\\qtum-0.16.1\\bin",
   "RPC UserName": "qtum_wallet_checker",
   "RPC Password": "qtum_wallet_checker_password",
-  "Startup Auto Staking": true
+  "Startup Auto Staking": true,
+  "TimeZone" : ""
 }

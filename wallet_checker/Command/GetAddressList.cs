@@ -61,9 +61,9 @@ namespace wallet_checker.Command
 
             foreach (KeyValuePair<string, double> elem in balances)
             {
-                await SendMessage(requesterId, elem.Key);
+                await SendMessage(requesterId, GetAddressLink(elem.Key));
                 await SendMessage(requesterId, elem.Value.ToString());
-                addressListStr += string.Format("  {0} : {1}\n", elem.Key, elem.Value.ToString());
+                addressListStr += string.Format("\n{0} : {1}", GetAddressLink(elem.Key), elem.Value.ToString());
             }
 
             var response = strings.Format(@"
@@ -71,7 +71,7 @@ namespace wallet_checker.Command
  요청 : {0}
  응답 : {1:yyyy/MM/dd HH:mm:ss}
 {2}
- ---------------------------------", msgDateStr, DateTimeHandler.GetKoreaNow(), addressListStr);
+ ---------------------------------", msgDateStr, DateTimeHandler.GetTimeZoneNow(), addressListStr);
 
             Logger.Log(response);
             Logger.Log("");

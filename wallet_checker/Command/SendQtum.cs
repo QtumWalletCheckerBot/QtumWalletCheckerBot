@@ -158,7 +158,7 @@ namespace wallet_checker.Command
                             int num = 1;
                             foreach(var pair in myAddressList)
                             {
-                                sendMsg += string.Format("\n{0}. {1} : {2}", num, pair.Key, pair.Value);
+                                sendMsg += string.Format("\n{0}. {1}:{2} Qtum", num, GetAddressLink(pair.Key), pair.Value);
                                 ++num;
                             }
 
@@ -265,7 +265,7 @@ namespace wallet_checker.Command
                             if (string.IsNullOrEmpty(myAddressStr))
                                 myAddressStr = strings.GetString("자동으로 선택");
 
-                            string str = strings.Format("나의 주소 : {0}", myAddressStr) + "\n" + strings.Format("받는 주소 : {0}", destAdress) + "\n" + strings.Format("보낼 수량 : {0}", destAmount);
+                            string str = strings.Format("나의 주소 : {0}", GetAddressLink(myAddressStr)) + "\n" + strings.Format("받는 주소 : {0}", GetAddressLink(destAdress)) + "\n" + strings.Format("보낼 수량 : {0}", destAmount);
                             str += "\n" + strings.Format("정말 진행 하시려면 숫자 1을 입력하세요.");
 
                             waitStartTime = DateTime.Now;
@@ -294,7 +294,8 @@ namespace wallet_checker.Command
 
                             if (string.IsNullOrEmpty(result) == false)
                             {
-                                await SendMessage(requesterId, "tx :\nhttps://explorer.qtum.org/tx/" + result);
+                                string sendResultMsg = string.Format("tx: {0}", GetTxLink(result));
+                                await SendMessage(requesterId, sendResultMsg);
                                 await SendMessage(requesterId, strings.GetString("보내기 응답 완료.\n"));
                             }
                             else

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Telegram.Bot.Types.Enums;
 
 namespace wallet_checker.Command
 {
@@ -86,18 +87,18 @@ namespace wallet_checker.Command
 
         ///--------------------------------------------------------------------------------------------------------
         ///
-        protected async Task SendMessage(long requesterId, string msg)
+        protected async Task SendMessage(long requesterId, string msg, ParseMode parseMode = ParseMode.Html)
         {
             if (string.IsNullOrEmpty(msg))
                 return;
 
             if (requesterId >= 0)
             {
-                await TelegramBot.Bot.SendTextMessageAsync(requesterId, msg);
+                await TelegramBot.Bot.SendTextMessageAsync(requesterId, msg, parseMode);
             }
             else
             {
-                await UserList.ForeachSendMsg(msg);
+                await UserList.ForeachSendMsg(msg, parseMode);
             }
         }
 
@@ -105,7 +106,7 @@ namespace wallet_checker.Command
         ///
         protected static void LogStartCommand(string cmdName, long requesterId, string requesterName)
         {
-            DateTime recvTime = DateTimeHandler.GetKoreaNow();
+            DateTime recvTime = DateTimeHandler.GetTimeZoneNow();
 
             Logger.Log("///////////////////////////////////////////////////////////////////////////////////////");
             Logger.Log("//");
@@ -114,6 +115,18 @@ namespace wallet_checker.Command
             Logger.Log(" 명령 : {0}", cmdName);
             Logger.Log(string.Format(" 요청자 : {0}, {1}", requesterName, requesterId));
             Logger.Log("");
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        public static string GetAddressLink(string address)
+        {
+            return string.Format("<a href=\"https://qtum.info/address/{0}/\">{1}</a>", address, address);
+        }
+
+        public static string GetTxLink(string tx)
+        {
+            return string.Format("<a href=\"https://qtum.info/tx/{0}\">{1}</a>", tx, tx);
         }
 
         ///--------------------------------------------------------------------------------------------------------

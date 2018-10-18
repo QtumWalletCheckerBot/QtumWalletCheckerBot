@@ -100,7 +100,7 @@ namespace wallet_checker.Command
 
                     if(OtpChecker.CheckOtp(otpStr))
                     {
-                        string response = await MakeResponse(requesterId, DateTimeHandler.ToKoreaTime(message.Date));
+                        string response = await MakeResponse(requesterId, DateTimeHandler.ToLocalTime(message.Date));
 
                         await SendMessage(requesterId, response);
                     }
@@ -126,14 +126,12 @@ namespace wallet_checker.Command
 
             string newAddress = QtumHandler.CreateNewAddress();
 
-            await SendMessage(requesterId, newAddress);
-
             var response = strings.Format(@"
  ---------------------------------
  요청 : {0}
  응답 : {1:yyyy/MM/dd HH:mm:ss}
 {2}
- ---------------------------------", msgDateStr, DateTimeHandler.GetKoreaNow(), newAddress);
+ ---------------------------------", msgDateStr, DateTimeHandler.GetTimeZoneNow(), GetAddressLink(newAddress));
 
             Logger.Log(response);
             Logger.Log("");

@@ -135,7 +135,7 @@ namespace wallet_checker.Command
                             {
                                 ICommand autoStaking = CommandFactory.CreateCommand(eCommand.StartStaking);
                                 if (autoStaking != null)
-                                    await autoStaking.Process(requesterId, requesterName, DateTimeHandler.GetKoreaNow());
+                                    await autoStaking.Process(requesterId, requesterName, DateTimeHandler.GetTimeZoneNow());
                             }
                         }
                         else

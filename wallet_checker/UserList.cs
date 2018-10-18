@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Telegram.Bot.Types.Enums;
 
 namespace wallet_checker
 {
@@ -40,11 +41,11 @@ namespace wallet_checker
 
         ///--------------------------------------------------------------------------------------------------------
         ///
-        static public async Task ForeachSendMsg(string msg)
+        static public async Task ForeachSendMsg(string msg, ParseMode parseMode = ParseMode.Default)
         {
             async Task sendProcessor(long userId)
             {
-                await TelegramBot.Bot.SendTextMessageAsync(userId, msg);
+                await TelegramBot.Bot.SendTextMessageAsync(userId, msg, parseMode);
             }
 
             await ForeachAsync(sendProcessor);

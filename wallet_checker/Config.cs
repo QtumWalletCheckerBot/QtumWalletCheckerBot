@@ -22,6 +22,7 @@ namespace wallet_checker
         public static string RPCPassword = "";
         public static bool StartupAutoStaking = true;
         public static string OtpSecretKey = "";
+        public static string TimeZoneName = TimeZoneInfo.Local.StandardName;
 
         ///--------------------------------------------------------------------------------------------------------
         ///
@@ -44,8 +45,20 @@ namespace wallet_checker
                     RPCUserName = json["RPC UserName"].ToString();
                     RPCPassword = json["RPC Password"].ToString();
                     StartupAutoStaking = (bool)json["Startup Auto Staking"];
+                    TimeZoneName = json["TimeZone"].ToString();
 
-                    
+                    try
+                    {
+                        if(TimeZoneInfo.FindSystemTimeZoneById(TimeZoneName) == null)
+                        {
+                            TimeZoneName = TimeZone.CurrentTimeZone.StandardName;
+                        }
+                    }
+                    catch(Exception)
+                    {
+                        TimeZoneName = TimeZone.CurrentTimeZone.StandardName;
+                    }
+
                     if (string.IsNullOrEmpty(TelegramApiId))
                     {
                         Logger.Log("Config 파일에 TelegramApiId 값이 비어있습니다. API 키를 입력해주세요.");
@@ -89,7 +102,8 @@ namespace wallet_checker
                             new JProperty("Qtum Wallet Path", QtumWalletPath),
                             new JProperty("RPC UserName", RPCUserName),
                             new JProperty("RPC Password", RPCPassword),
-                            new JProperty("Startup Auto Staking", StartupAutoStaking)
+                            new JProperty("Startup Auto Staking", StartupAutoStaking),
+                            new JProperty("TimeZone", TimeZoneName)
                             );
 
                         json.WriteTo(writer);

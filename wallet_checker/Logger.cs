@@ -11,7 +11,7 @@ namespace wallet_checker
     {
         static public string GetDateTime()
         {
-            DateTime NowDate = DateTimeHandler.GetKoreaNow();
+            DateTime NowDate = DateTimeHandler.GetTimeZoneNow();
 
             return NowDate.ToString("yyyy-MM-dd HH:mm:ss") + ":" + NowDate.Millisecond.ToString("000");
         }

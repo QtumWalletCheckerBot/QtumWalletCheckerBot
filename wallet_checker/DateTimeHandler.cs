@@ -8,28 +8,28 @@ namespace wallet_checker
 {
     static public class DateTimeHandler
     {
-        static public DateTime ToKoreaTime(DateTime srcTime)
+        static public DateTime ToLocalTime(DateTime srcTime)
         {
             try
             {
-                TimeZoneInfo koreaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Korea Standard Time");
-
-                return TimeZoneInfo.ConvertTimeFromUtc(srcTime, koreaTimeZone);
+                TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(Config.TimeZoneName);
+                return TimeZoneInfo.ConvertTimeFromUtc(TimeZoneInfo.ConvertTimeToUtc(srcTime), timeZoneInfo);                   
             }
             catch(Exception)
             {
-                return srcTime;
             }
+
+            return srcTime;
         }
 
-        static public DateTime GetKoreaNow()
+        static public DateTime GetTimeZoneNow()
         {
             try
             {
-                if (TimeZone.CurrentTimeZone.StandardName == "Korea Standard Time")
+                if (TimeZone.CurrentTimeZone.StandardName == Config.TimeZoneName)
                     return DateTime.Now;
 
-                return ToKoreaTime(DateTime.Now);
+                return ToLocalTime(DateTime.Now);
             }
             catch(Exception)
             {

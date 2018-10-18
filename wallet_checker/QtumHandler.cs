@@ -158,7 +158,7 @@ namespace wallet_checker
                         {
                             foreach (var pair in balances)
                             {
-                                string address = pair.Key;
+                                string address = Command.ICommand.GetAddressLink(pair.Key);
                                 double amount = pair.Value;
 
                                 if (accountCount++ > 0)
@@ -376,7 +376,7 @@ namespace wallet_checker
         ///
         static public string BackupWallet()
         {
-            string fileName = string.Format("{0:yyyy_MM_dd-HH_mm_ss}.dat", DateTimeHandler.GetKoreaNow());
+            string fileName = string.Format("{0:yyyy_MM_dd-HH_mm_ss}.dat", DateTimeHandler.GetTimeZoneNow());
 
             string cmdResult = commandline.Process(string.Format("backupwallet \"./backups/{0}\"", fileName));
 
