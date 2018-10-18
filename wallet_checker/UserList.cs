@@ -55,7 +55,7 @@ namespace wallet_checker
 
         ///--------------------------------------------------------------------------------------------------------
         ///
-        static public async Task ForeachSendMsg(string msg, ParseMode parseMode = ParseMode.Default)
+        static public async Task ForeachSendMsg(string msg, ParseMode parseMode = ParseMode.Html)
         {
             async Task sendProcessor(long userId)
             {
