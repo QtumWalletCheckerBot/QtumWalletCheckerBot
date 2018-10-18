@@ -32,6 +32,7 @@ namespace wallet_checker
             while(true)
             {
                 Thread.Sleep(1000);
+                UserList.UpdateInvalidUserList();
             }
 
             /// Recv Stop
@@ -147,6 +148,36 @@ namespace wallet_checker
             /// 예외처리
             if (message == null || message.Type != MessageType.Text)
                 return;
+
+            if (UserList.Exists(message.Chat.Id) == false)
+            {
+                const int kickDurationMinute = 30;
+                const uint accessCountMax = 5;
+                uint accessCount = UserList.AddInvalidUser(message.Chat.Id);
+
+                if (accessCount > accessCountMax)
+                    return;
+
+                string alretMsg = string.Format(
+                    "{0} {1}\n you are not registered on user list.\n repeated attempts at unauthorized access will block for {2} minutes. \n {3} attempts remaining."
+                    , message.Chat.Username, message.Chat.Id, kickDurationMinute, accessCountMax - accessCount);
+
+                await TelegramBot.Bot.SendTextMessageAsync(message.Chat.Id, alretMsg);
+
+                if (accessCount>= accessCountMax)
+                {
+                    try
+                    {
+                        DateTime now = DateTime.UtcNow;
+                        await TelegramBot.Bot.RestrictChatMemberAsync(message.Chat.Id, message.From.Id, now.Add(new TimeSpan(0, kickDurationMinute, 0)));
+                    }
+                    catch(Exception)
+                    {
+                    }
+                }                
+
+                return;
+            }
 
             if(currentCommand != null && currentCommand.IsCompleted == false)
             {

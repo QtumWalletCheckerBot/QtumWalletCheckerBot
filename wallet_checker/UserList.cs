@@ -13,9 +13,23 @@ namespace wallet_checker
         ///--------------------------------------------------------------------------------------------------------
         ///
 
+        class InvalidUserInfo
+        {
+            public DateTime lastTime = DateTime.Now;
+            public uint accessCount = 0;
+        }
+
         static private string savePath = "./userList.txt";
 
         static private HashSet<long> userIdList = new HashSet<long>();
+        static private Dictionary<long, InvalidUserInfo> invalidUserList = new Dictionary<long, InvalidUserInfo>();
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        static public bool Exists(long id)
+        {
+            return userIdList.Contains(id);
+        }
 
         ///--------------------------------------------------------------------------------------------------------
         ///
@@ -109,6 +123,44 @@ namespace wallet_checker
             }
 
             Logger.Log("Success Load UserIdList");
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        static public uint AddInvalidUser(long id)
+        {
+            InvalidUserInfo info = null;
+
+            if( invalidUserList.TryGetValue(id, out info) == false)
+            {
+                info = new InvalidUserInfo();
+                invalidUserList.Add(id, info);
+            }
+
+            info.lastTime = DateTime.Now;
+            ++info.accessCount;
+
+            return info.accessCount;
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        static public void UpdateInvalidUserList()
+        {
+            List<long> deleteUserList = new List<long>();
+            DateTime now = DateTime.Now;
+            foreach (var pair in invalidUserList)
+            {
+                if((now - pair.Value.lastTime).Ticks / TimeSpan.TicksPerMinute > 1)
+                {
+                    deleteUserList.Add(pair.Key);
+                }
+            }
+
+            foreach(var userId in deleteUserList)
+            {
+                invalidUserList.Remove(userId);
+            }
         }
 
         ///--------------------------------------------------------------------------------------------------------
