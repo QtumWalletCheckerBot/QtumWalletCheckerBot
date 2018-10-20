@@ -20,6 +20,9 @@ namespace wallet_checker
 
         static public async void RefreshTransactionInfo()
         {
+            if (lastTxTime == DateTime.MaxValue)
+                return;
+
             if ((DateTime.Now - lastRefreshTine).Ticks / TimeSpan.TicksPerSecond < 10)
                 return;
 
@@ -31,7 +34,7 @@ namespace wallet_checker
             {
                 QtumTxInfo lastInfo = list[list.Count - 1];
 
-                DateTime newLastTime = BlockTimeToDateTime(lastInfo.time);
+                DateTime newLastTime = BlockTimeToUtcTime(lastInfo.time);
 
                 if(newLastTime > lastTxTime)
                 {
@@ -39,19 +42,21 @@ namespace wallet_checker
 
                     DateTime notiyStartTime = lastTxTime;
 
+                    lastTxTime = DateTime.MaxValue;
+
+                    await BroadcastTxNotify(notiyStartTime, SummarizeTxList(list));
+
                     lastTxTime = newLastTime;
 
                     SaveLastTime();
-
-                    await BroadcastTxNotify(notiyStartTime, SummarizeTxList(list));
                 }
             }
         }
 
-        static public DateTime BlockTimeToDateTime(long time)
+        static public DateTime BlockTimeToUtcTime(long time)
         {
             DateTime tmp = new DateTime(1970, 1, 1);
-            return new DateTime(time * TimeSpan.TicksPerSecond + tmp.Ticks);
+            return new DateTime(time * TimeSpan.TicksPerSecond + tmp.Ticks, DateTimeKind.Utc);
         }
 
         static private void LoadLastTime()
@@ -161,7 +166,7 @@ namespace wallet_checker
             for (int i=txList.Count - 1; i >= 0; --i)
             {
                 QtumTxInfo txInfo = txList[i];
-                DateTime txTime = BlockTimeToDateTime(txInfo.time);
+                DateTime txTime = BlockTimeToUtcTime(txInfo.time);
 
                 if (txTime < startTime)
                     break;

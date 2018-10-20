@@ -20,6 +20,11 @@ namespace wallet_checker
         public string comment = "";
     }
 
+    public class QtumBlockInfo
+    {
+
+    }
+
     ///-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///
     public class QtumHandler
@@ -429,10 +434,17 @@ namespace wallet_checker
                         newInfo.category = txJson["category"].ToString();
                         newInfo.amount = Convert.ToDouble(txJson["amount"].ToString());
 
-                        //if (txJson["blocktime"] != null)
-                        //    newInfo.time = Convert.ToInt64(txJson["blocktime"].ToString());
-                        //else
-                            newInfo.time = Convert.ToInt64(txJson["time"].ToString());
+                        //if (txJson["blockhash"] == null)
+                        //    continue;
+                        //
+                        //JObject blockInfoJson = GetBlockInfo(txJson["blockhash"].ToString());
+                        //
+                        //if (blockInfoJson == null || blockInfoJson["time"] == null)
+                        //    continue;
+                        //
+                        //newInfo.time = Convert.ToInt64(blockInfoJson["time"].ToString());
+
+                        newInfo.time = Convert.ToInt64(txJson["time"].ToString());
 
                         newInfo.txId = txJson["txid"].ToString();
 
@@ -456,6 +468,18 @@ namespace wallet_checker
                 if (txJson != null)
                     Logger.Log("faild parse txList {0}, {1}", i, txJson.ToString());
             }
+
+            return null;
+        }
+
+        static public JObject GetBlockInfo(string blockHash)
+        {
+            string blockInfoStr = commandline.Process(string.Format("getblock \"{0}\"", blockHash));
+
+            JObject json = null;
+
+            if (TryParseJson(blockInfoStr, out json))
+                return json;
 
             return null;
         }
