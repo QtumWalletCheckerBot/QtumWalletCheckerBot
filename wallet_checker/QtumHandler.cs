@@ -430,7 +430,10 @@ namespace wallet_checker
                             continue;
 
                         QtumTxInfo newInfo = new QtumTxInfo();
-                        newInfo.address = txJson["address"].ToString();
+
+                        if(txJson["address"] != null)
+                            newInfo.address = txJson["address"].ToString();
+
                         newInfo.category = txJson["category"].ToString();
                         newInfo.amount = Convert.ToDouble(txJson["amount"].ToString());
 
@@ -463,10 +466,10 @@ namespace wallet_checker
                     return list;
                 }
             }
-            catch(Exception)
+            catch(Exception e)
             {
                 if (txJson != null)
-                    Logger.Log("faild parse txList {0}, {1}", i, txJson.ToString());
+                    Logger.Log("faild parse txList {0}, {1}\n{2}", i, txJson.ToString(), e.ToString());
             }
 
             return null;

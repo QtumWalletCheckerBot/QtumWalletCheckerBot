@@ -43,7 +43,8 @@ namespace wallet_checker
                 string rpcPwd = Config.RPCPassword;
                 command = string.Format(@"{0}\qtum-cli.exe -rpcuser={1} -rpcpassword={2} {3}", cliPath, rpcUser, rpcPwd, command);
 
-                Console.InputEncoding = Encoding.Default;
+                //Console.InputEncoding = Encoding.Default;
+                Console.OutputEncoding = Encoding.Default;
                 using (Process process = new Process())
                 {
                     process.EnableRaisingEvents = false;
@@ -58,10 +59,12 @@ namespace wallet_checker
                     //    utf8Writer.Close();
                     //}
 
-                    using (StreamReader utf8Reader = new StreamReader(process.StandardOutput.BaseStream, Encoding.UTF8))
+                    using (StreamReader utf8Reader = new StreamReader(process.StandardOutput.BaseStream, Encoding.Default))
                     {
                         result = utf8Reader.ReadToEnd();
                     }
+
+                    //result = process.StandardOutput.ReadToEnd();
 
                     int parseIdx = result.IndexOf(command);
 
