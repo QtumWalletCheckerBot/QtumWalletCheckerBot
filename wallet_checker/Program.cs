@@ -65,14 +65,13 @@ namespace wallet_checker
             }
 
             UserList.Load();
+            NewTransactionChecker.Init();
 
             await TelegramBot.Initialize(Bot_OnMessage, Bot_OnMessage, Bot_OnReceiveError);
 
             await BroadcastStartupNotify();
 
-            await StartupAutoStaking();
-
-            
+            await StartupAutoStaking();            
         }
 
         static async void Update()
@@ -80,8 +79,14 @@ namespace wallet_checker
             while (true)
             {
                 Thread.Sleep(100);
-                if (currentCommand != null)
+                if (currentCommand != null && currentCommand.IsCompleted == false)
+                {
                     await currentCommand.OnUpdate();
+                }
+                else
+                {
+                    NewTransactionChecker.RefreshTransactionInfo();
+                }
             }
         }
 
@@ -104,6 +109,19 @@ namespace wallet_checker
         /// 등록된 유저들에게 시작 알람을 보냅니다.
         private static async Task BroadcastStartupNotify()
         {
+            async Task unban(long userId)
+            {
+                try
+                {
+                    await TelegramBot.Bot.UnbanChatMemberAsync(userId, Convert.ToInt32(userId));
+                }
+                catch(Exception)
+                {
+
+                }
+            }
+
+            await UserList.ForeachAsync(unban);
             await UserList.ForeachSendMsg("//////////////////////////////////////////////////////");
             await UserList.ForeachSendMsg(strings.Format("퀀텀 지갑이 구동되었습니다.  {0}", DateTimeHandler.GetTimeZoneNow()));
             await UserList.ForeachSendMsg(Command.CommandFactory.GetCommandHelpString());
@@ -152,17 +170,26 @@ namespace wallet_checker
             if (UserList.Exists(message.Chat.Id) == false)
             {
                 const int kickDurationMinute = 30;
-                const uint accessCountMax = 5;
+                const uint accessCountMax = 1;
                 uint accessCount = UserList.AddInvalidUser(message.Chat.Id);
 
                 if (accessCount > accessCountMax)
                     return;
 
-                string alretMsg = string.Format(
-                    "{0} {1}\n you are not registered on user list.\n repeated attempts at unauthorized access will block for {2} minutes. \n {3} attempts remaining."
-                    , message.Chat.Username, message.Chat.Id, kickDurationMinute, accessCountMax - accessCount);
+                try
+                {
+                    string alretMsg = string.Format(
+                    "user name : {0}\nuser id : {1}\n you are not registered on user list.\n add the your user id to UserList.txt and restart the bot program."
+                    , message.Chat.Username, message.Chat.Id);
 
-                await TelegramBot.Bot.SendTextMessageAsync(message.Chat.Id, alretMsg);
+                    await TelegramBot.Bot.SendTextMessageAsync(message.Chat.Id, alretMsg);
+
+                    Logger.Log("Invalid Access User {0:yyyy/MM/dd HH:mm:ss} {1} {2}", DateTimeHandler.ToLocalTime(message.Date), message.Chat.Id, message.Chat.Username);
+                }
+                catch(Exception)
+                {
+
+                }                
 
                 if (accessCount>= accessCountMax)
                 {
@@ -170,6 +197,8 @@ namespace wallet_checker
                     {
                         DateTime now = DateTime.UtcNow;
                         await TelegramBot.Bot.RestrictChatMemberAsync(message.Chat.Id, message.From.Id, now.Add(new TimeSpan(0, kickDurationMinute, 0)));
+
+                        Logger.Log("Kick User {0:yyyy/MM/dd HH:mm:ss} {1} {2}", DateTimeHandler.ToLocalTime(message.Date), message.Chat.Id, message.Chat.Username);
                     }
                     catch(Exception)
                     {

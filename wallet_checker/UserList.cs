@@ -57,6 +57,11 @@ namespace wallet_checker
         ///
         static public async Task ForeachSendMsg(string msg, ParseMode parseMode = ParseMode.Html)
         {
+            Logger.Log("\n@@@@@@@@@@");
+            Logger.Log("[Boadcast]");
+            Logger.Log(msg);
+            Logger.Log("@@@@@@@@@@\n");
+
             async Task sendProcessor(long userId)
             {
                 await TelegramBot.Bot.SendTextMessageAsync(userId, msg, parseMode);

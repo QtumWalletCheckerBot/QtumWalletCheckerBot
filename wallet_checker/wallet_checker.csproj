@@ -71,6 +71,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="DateTimeHandler.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="NewTransactionChecker.cs" />
     <Compile Include="OtpChecker.cs" />
     <Compile Include="PasswordManager.cs" />
     <Compile Include="Program.cs" />

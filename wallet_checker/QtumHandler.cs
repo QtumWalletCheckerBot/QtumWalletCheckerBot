@@ -8,6 +8,18 @@ using System.Threading.Tasks;
 
 namespace wallet_checker
 {
+    public class QtumTxInfo
+    {
+        public string address = "";
+        public string category = "";
+        public double amount = 0;
+        public string label = "";
+        public double fee = 0;
+        public long time = 0;
+        public string txId = "";
+        public string comment = "";
+    }
+
     ///-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///
     public class QtumHandler
@@ -386,6 +398,66 @@ namespace wallet_checker
         static public string RestoreWallet(string filePath)
         {
             return "지갑 복원은 아직 구현되지 않았습니다.";
+        }
+
+        static public List<QtumTxInfo> GetTransactions(uint count = 1)
+        {
+            JObject json = null;
+            JToken txJson = null;
+            int i = 0;
+
+            try
+            {
+                string resultStr = "{\n TxList : " + commandline.Process("listtransactions \"*\" " + count) + "\n}";
+                
+
+                if (TryParseJson(resultStr, out json))
+                {
+                    List<QtumTxInfo> list = new List<QtumTxInfo>();
+
+                    JToken txListJson = json["TxList"];
+
+                    for(i=0; i<txListJson.Count(); ++i)
+                    {
+                        txJson = txListJson[i];
+
+                        if (txJson == null)
+                            continue;
+
+                        QtumTxInfo newInfo = new QtumTxInfo();
+                        newInfo.address = txJson["address"].ToString();
+                        newInfo.category = txJson["category"].ToString();
+                        newInfo.amount = Convert.ToDouble(txJson["amount"].ToString());
+
+                        //if (txJson["blocktime"] != null)
+                        //    newInfo.time = Convert.ToInt64(txJson["blocktime"].ToString());
+                        //else
+                            newInfo.time = Convert.ToInt64(txJson["time"].ToString());
+
+                        newInfo.txId = txJson["txid"].ToString();
+
+                        if (txJson["fee"] != null)
+                            newInfo.fee = Convert.ToDouble(txJson["fee"].ToString());
+
+                        if (txJson["label"] != null)
+                            newInfo.label = txJson["label"].ToString();
+
+                        if (txJson["comment"] != null)
+                            newInfo.label = txJson["comment"].ToString();
+
+                        list.Add(newInfo);
+                    }
+
+                    return list;
+                }
+            }
+            catch(Exception)
+            {
+                if (txJson != null)
+                    Logger.Log("faild parse txList {0}, {1}", i, txJson.ToString());
+            }
+
+            return null;
         }
     }
     ///-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
