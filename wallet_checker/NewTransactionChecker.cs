@@ -34,7 +34,7 @@ namespace wallet_checker
             {
                 QtumTxInfo lastInfo = list[list.Count - 1];
 
-                DateTime newLastTime = BlockTimeToUtcTime(lastInfo.time);
+                DateTime newLastTime = QtumHandler.BlockTimeToUtcTime(lastInfo.time);
 
                 if(newLastTime > lastTxTime)
                 {
@@ -51,12 +51,6 @@ namespace wallet_checker
                     SaveLastTime();
                 }
             }
-        }
-
-        static public DateTime BlockTimeToUtcTime(long time)
-        {
-            DateTime tmp = new DateTime(1970, 1, 1);
-            return new DateTime(time * TimeSpan.TicksPerSecond + tmp.Ticks, DateTimeKind.Utc);
         }
 
         static private void LoadLastTime()
@@ -166,20 +160,12 @@ namespace wallet_checker
             for (int i=txList.Count - 1; i >= 0; --i)
             {
                 QtumTxInfo txInfo = txList[i];
-                DateTime txTime = BlockTimeToUtcTime(txInfo.time);
+                DateTime txTime = QtumHandler.BlockTimeToUtcTime(txInfo.time);
 
                 if (txTime < startTime)
                     break;
 
-                string notifyStr = string.Format("time : {0:yyyy/MM/dd HH:mm:ss}", DateTimeHandler.ToLocalTime(txTime));
-                notifyStr += string.Format("\n tx id : {0}", Command.ICommand.GetTxLink(txInfo.txId));
-                //notifyStr += string.Format("\n address : {0}", Command.ICommand.GetAddressLink(txInfo.address));
-                //notifyStr += string.Format("\n category : {0}", txInfo.category);
-                notifyStr += string.Format("\n amount : {0}", txInfo.amount);
-                notifyStr += string.Format("\n fee : {0}", txInfo.fee);
-                notifyStr += string.Format("\n label : {0}", txInfo.label);
-                notifyStr += string.Format("\n comment : {0}", txInfo.comment);
-                notifyStr += string.Format("\n");
+                string notifyStr = txInfo.GetString();
 
                 Logger.Log(notifyStr);
                 Logger.Log("");

@@ -12,6 +12,7 @@ namespace wallet_checker.Command
         None,
         CheckState,
         GetAddressList,
+        GetTransectionList,
         CreateAddress,
         StartStaking,
         StopStaking,
@@ -20,6 +21,7 @@ namespace wallet_checker.Command
         RemoteCommandLine,
         BackupWallet,
         RestoreWallet,
+        RestartMachine,
     }
     
 
@@ -121,11 +123,21 @@ namespace wallet_checker.Command
         ///
         public static string GetAddressLink(string address)
         {
+            address = address.Trim();
+
+            if (string.IsNullOrEmpty(address))
+                return "empty";
+
             return string.Format("<a href=\"https://qtum.info/address/{0}/\">{1}</a>", address, address);
         }
 
         public static string GetTxLink(string tx)
         {
+            tx = tx.Trim();
+
+            if (string.IsNullOrEmpty(tx))
+                return "empty";
+
             return string.Format("<a href=\"https://qtum.info/tx/{0}\">{1}</a>", tx, tx);
         }
 

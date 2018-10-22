@@ -122,6 +122,8 @@ namespace wallet_checker.Command
         /// 확인 요청에 대한 응답메세지 생성
         private async Task<string> MakeResponse(long requesterId, DateTime requestTime)
         {
+            await Task<string>.Run(() => { });
+
             string msgDateStr = string.Format("{0:yyyy/MM/dd HH:mm:ss}", requestTime);
 
             string newAddress = QtumHandler.CreateNewAddress();

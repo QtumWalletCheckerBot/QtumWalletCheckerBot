@@ -269,4 +269,28 @@
   <data name ="자동으로 선택">
 	<en>Auto Select</en>
   </data>
+  <data name ="머신 재시작">
+	<en>Restart machine</en>
+  </data>
+  <data name ="지갑을 실행되고 있는 컴퓨터를 재시작 합니다.">
+	<en>Restart the computer that is running Wallet.</en>
+  </data>
+  <data name ="머신 재시작 응답 완료.\n">
+	<en>Machine restart response completed.</en>
+  </data>
+  <data name ="머신을 재시작 합니다.">
+	<en>Restart the machine.</en>
+  </data>
+  <data name ="트랜잭션 리스트">
+	<en>Transaction List</en>
+  </data>
+  <data name ="트랙젝션 리스트를 출력합니다.">
+	<en>Outputs a list of transaction</en>
+  </data>
+  <data name ="{0} {1} 트랜잭션 목록을 확인하는 중 입니다.">
+	<en>Checking transaction list {0} {1}.</en>
+  </data>
+  <data name ="트랜젝션 리스트 응답 완료.\n">
+	<en>Complete response of the transaction list.</en>
+  </data>
 </root>

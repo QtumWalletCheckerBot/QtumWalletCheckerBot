@@ -6,5 +6,6 @@
   "RPC UserName": "qtum_wallet_checker",
   "RPC Password": "qtum_wallet_checker_password",
   "Startup Auto Staking": true,
-  "TimeZone" : ""
+  "TimeZone" : "Korea Standard Time",
+  "MiniumVersion" : "0.16.1"
 }

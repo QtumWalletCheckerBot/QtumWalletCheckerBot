@@ -86,6 +86,7 @@ namespace wallet_checker
                 else
                 {
                     NewTransactionChecker.RefreshTransactionInfo();
+                    BadNodeChecker.Update();
                 }
             }
         }

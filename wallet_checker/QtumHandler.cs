@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace wallet_checker
 {
+    ///-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///
     public class QtumTxInfo
     {
         public string address = "";
@@ -18,11 +20,32 @@ namespace wallet_checker
         public long time = 0;
         public string txId = "";
         public string comment = "";
+
+        public string GetString()
+        {
+            DateTime txTime = QtumHandler.BlockTimeToUtcTime(time);
+            string str = string.Format("time : {0:yyyy/MM/dd HH:mm:ss}", DateTimeHandler.ToLocalTime(txTime));
+            str += string.Format("\n tx id : {0}", Command.ICommand.GetTxLink(txId));
+            str += string.Format("\n address : {0}", Command.ICommand.GetAddressLink(address));
+            //notifyStr += string.Format("\n category : {0}", txInfo.category);
+            str += string.Format("\n amount : {0}", amount);
+            str += string.Format("\n fee : {0}", fee);
+            str += string.Format("\n label : {0}", label);
+            str += string.Format("\n comment : {0}", comment);
+            str += string.Format("\n");
+
+            return str;
+        }
     }
 
-    public class QtumBlockInfo
+    ///-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///
+    public class QtumPeerInfo
     {
-
+        public string addr = "";
+        public string version = "";
+        public string subVersion = "";
+        public double pingTime = 0;
     }
 
     ///-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -400,11 +423,15 @@ namespace wallet_checker
             return cmdResult +"\n" + fileName;
         }
 
+        ///--------------------------------------------------------------------------------------------------------
+        ///
         static public string RestoreWallet(string filePath)
         {
             return "지갑 복원은 아직 구현되지 않았습니다.";
         }
 
+        ///--------------------------------------------------------------------------------------------------------
+        ///
         static public List<QtumTxInfo> GetTransactions(uint count = 1)
         {
             JObject json = null;
@@ -475,6 +502,8 @@ namespace wallet_checker
             return null;
         }
 
+        ///--------------------------------------------------------------------------------------------------------
+        ///
         static public JObject GetBlockInfo(string blockHash)
         {
             string blockInfoStr = commandline.Process(string.Format("getblock \"{0}\"", blockHash));
@@ -485,6 +514,80 @@ namespace wallet_checker
                 return json;
 
             return null;
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        static public DateTime BlockTimeToUtcTime(long time)
+        {
+            DateTime tmp = new DateTime(1970, 1, 1);
+            return new DateTime(time * TimeSpan.TicksPerSecond + tmp.Ticks, DateTimeKind.Utc);
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        static public List<QtumPeerInfo> GetPeerList()
+        {
+            List<QtumPeerInfo> list = new List<QtumPeerInfo>();
+
+            string peerInfoStr = "{\n PeerList : " + commandline.Process("getpeerinfo") + "\n}";
+
+            JObject json = null;
+
+            if (TryParseJson(peerInfoStr, out json) == false)
+                return list;
+            
+            JToken peerListJson = json["PeerList"];
+
+            for (int i=0; i< peerListJson.Count(); ++i)
+            {
+                JToken peerInfo = peerListJson[i];
+
+                QtumPeerInfo newInfo = new QtumPeerInfo();
+
+                double ping = 0;
+                double minPing = 0;
+
+                if(peerInfo["pingwait"] != null)
+                {
+                    double.TryParse(peerInfo["pingwait"].ToString(), out ping);
+                    minPing = ping;
+                }
+                else
+                {
+                    if(peerInfo["minping"] != null)
+                        double.TryParse(peerInfo["minping"].ToString(), out minPing);
+
+                    if(peerInfo["pingtime"] != null)
+                        double.TryParse(peerInfo["pingtime"].ToString(), out ping);
+                }                
+
+                newInfo.pingTime = (ping + minPing) * 0.5;
+                newInfo.addr = peerInfo["addr"].ToString();
+                newInfo.version = peerInfo["version"].ToString();
+                newInfo.subVersion = peerInfo["subver"].ToString();
+
+                list.Add(newInfo);
+            }
+
+            return list;
+        }
+
+        ///--------------------------------------------------------------------------------------------------------
+        ///
+        static public void BanPeer(QtumPeerInfo peer)
+        {
+            if (peer == null || string.IsNullOrEmpty(peer.addr))
+                return;
+
+            string address = peer.addr;
+
+            if(address.IndexOf(":") != -1)
+            {
+                address = address.Substring(0, address.IndexOf(":"));
+            }
+
+            commandline.Process(string.Format("setban \"{0}\" \"add\" \"86400\"", address));
         }
     }
     ///-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

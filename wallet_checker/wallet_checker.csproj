@@ -55,14 +55,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BadNodeChecker.cs" />
     <Compile Include="CommandLineController.cs" />
     <Compile Include="Command\BackupWallet.cs" />
     <Compile Include="Command\CheckState.cs" />
+    <Compile Include="Command\GetTransactionList.cs" />
     <Compile Include="Command\RemoteCommandLine.cs" />
     <Compile Include="Command\CreateAddress.cs" />
     <Compile Include="Command\GetAddressList.cs" />
     <Compile Include="Command\ICommand.cs" />
     <Compile Include="Command\CommandFactory.cs" />
+    <Compile Include="Command\RestartMachine.cs" />
     <Compile Include="Command\RestartQtumWallet.cs" />
     <Compile Include="Command\RestoreWallet.cs" />
     <Compile Include="Command\SendQtum.cs" />

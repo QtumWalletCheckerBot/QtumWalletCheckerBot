@@ -16,6 +16,7 @@ namespace wallet_checker.Command
             {
                 case eCommand.CheckState: return new CheckState();
                 case eCommand.GetAddressList: return new GetAddressList();
+                case eCommand.GetTransectionList: return new GetTransactionList();
                 case eCommand.CreateAddress: return new CreateAddress();
                 case eCommand.StartStaking: return new StartStaking();
                 case eCommand.StopStaking: return new StopStaking();
@@ -24,6 +25,7 @@ namespace wallet_checker.Command
                 case eCommand.RemoteCommandLine: return new RemoteCommandLine();
                 case eCommand.BackupWallet: return new BackupWallet();
                 case eCommand.RestoreWallet: return new RestoreWallet();
+                case eCommand.RestartMachine: return new RestartMachine();
             }
 
             return null;

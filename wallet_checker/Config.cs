@@ -23,6 +23,7 @@ namespace wallet_checker
         public static bool StartupAutoStaking = true;
         public static string OtpSecretKey = "";
         public static string TimeZoneName = TimeZoneInfo.Local.StandardName;
+        public static int[] MiniumVersion = new int[3];
 
         ///--------------------------------------------------------------------------------------------------------
         ///
@@ -46,6 +47,14 @@ namespace wallet_checker
                     RPCPassword = json["RPC Password"].ToString();
                     StartupAutoStaking = (bool)json["Startup Auto Staking"];
                     TimeZoneName = json["TimeZone"].ToString();
+
+                    string versionStr = json["MiniumVersion"].ToString();
+                    string[] verList = versionStr.Trim().Split('.');
+
+                    for(int i=0; i<3; ++i)
+                    {
+                        int.TryParse( verList[i], out MiniumVersion[i] );
+                    }
 
                     try
                     {
