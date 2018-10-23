@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -122,7 +123,7 @@ namespace wallet_checker.Command
                         else
                         {
                             IsCompleted = true;
-
+                        
                             await SendMessage(requesterId, strings.GetString("Otp 인증에 실패 했습니다."));
                         }
                     }
@@ -131,11 +132,67 @@ namespace wallet_checker.Command
                 case eCommandState.InputWaitCommandLine:
                     {
                         string commandLineStr = msg;
-                        string commandResult = QtumHandler.CommandLine(commandLineStr);
+
+                        Logger.Log( "[" +message.Chat.Username + "] [" + message.Chat.Id + "] : " + commandLineStr);
+
+                        string commandResult = QtumHandler.CommandLine(commandLineStr).Trim();
+
+                        List<string> resultList = new List<string>();
+
+                        await SendMessage(requesterId, "------------------------", Telegram.Bot.Types.Enums.ParseMode.Default);
+
+                        if (string.IsNullOrEmpty(commandResult))
+                        {
+                            commandResult = "empty";
+
+                            resultList.Add(commandResult);
+                        }
+                        else
+                        {
+                            // convert string to stream
+                            byte[] byteArray = Encoding.UTF8.GetBytes(commandResult);
+                            using (MemoryStream stream = new MemoryStream(byteArray))
+                            {
+                                using (StreamReader reader = new StreamReader(stream))
+                                {
+                                    while(reader.EndOfStream == false)
+                                        resultList.Add(reader.ReadLine());
+                                }
+                            }
+                        }
+
+                        const int maxSendCount = 10;
+                        const int onceListCount = 50;
+
+                        int sendCount = 0;
+
+                        for(int i=0; i<resultList.Count(); i+= onceListCount)
+                        {
+                            string responseMsg = "";
+
+                            for(int j=0; j < onceListCount; ++j)
+                            {
+                                int idx = i + j;
+
+                                if (idx >= resultList.Count())
+                                    break;
+
+                                responseMsg += resultList[idx] + "\n";
+                            }
+
+                            if(++sendCount >= maxSendCount)
+                            {
+                                await SendMessage(requesterId, "The result text is too long....", Telegram.Bot.Types.Enums.ParseMode.Default);
+                                break;
+                            }
+
+                            await SendMessage(requesterId, responseMsg, Telegram.Bot.Types.Enums.ParseMode.Default);
+                        }
+
+                        await SendMessage(requesterId, "------------------------", Telegram.Bot.Types.Enums.ParseMode.Default);
+
 
                         IsCompleted = true;
-
-                        await SendMessage(requesterId, commandResult);
                     }
                     break;
             }

@@ -14,7 +14,7 @@
 {2}
  ---------------------------------</en>
   </data>
-  <data name="&#xD;&#xA; 코어 버전 : {0}&#xD;&#xA; 지갑 버전 : {1}&#xD;&#xA; 블록 : {2}&#xD;&#xA; 잔고 : {3} Qtum&#xD;&#xA; 스테이크 갯수 : {4} Qtum&#xD;&#xA; 스테이크 상태 : {5}&#xD;&#xA; 연결된 커넥션 : {6} 개&#xD;&#xA; 주소 목록 :&#xD;&#xA;" >
+  <data name="&#xD;&#xA; 코어 버전 : {0}&#xD;&#xA; 지갑 버전 : {1}&#xD;&#xA; 블록 : {2}&#xD;&#xA; 잔고 : {3} Qtum&#xD;&#xA; 스테이크 갯수 : {4} Qtum&#xD;&#xA; 스테이크 상태 : {5}&#xD;&#xA; 연결된 커넥션 : {6} 개&#xD;&#xA; TimeOffset : {7}&#xD;&#xA; 주소 목록 :&#xD;&#xA;" >
 		<en>
  Core version: {0}
  Wallet version: {1}
@@ -23,6 +23,7 @@
  Number of stakes: {4} Qtum
  Stake status: {5}
  Connections: {6}
+ TimeOffset: {7}
  Address list:
  </en>
 	</data>

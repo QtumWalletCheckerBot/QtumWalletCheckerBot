@@ -155,6 +155,7 @@ namespace wallet_checker
  스테이크 갯수 : {4} Qtum
  스테이크 상태 : {5}
  연결된 커넥션 : {6} 개
+ TimeOffset : {7}
  주소 목록 :
 "
                         , getInfoJson["version"].ToString()
@@ -164,6 +165,7 @@ namespace wallet_checker
                         , getInfoJson["stake"].ToString()
                         , stakingStateStr
                         , (uint)getInfoJson["connections"]
+                        , getInfoJson["timeoffset"].ToString()
                     );
 
                     string listunspentResult = "{\n AddressList : " + commandline.Process("listunspent") + "\n}";
