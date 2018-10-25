@@ -395,7 +395,7 @@ namespace wallet_checker
             if(string.IsNullOrEmpty(myAddress))
                 cmdResult = commandline.Process(string.Format("sendtoaddress \"{0}\" {1} \"\" \"\" true", destAddress, amount));
             else
-                cmdResult = commandline.Process(string.Format("sendtoaddress \"{0}\" {1} \"\" \"\" true null null \"\" \"{2}\"", destAddress, amount, myAddress));
+                cmdResult = commandline.Process(string.Format("sendtoaddress \"{0}\" {1} \"\" \"\" true null null \"\" \"{2}\" true", destAddress, amount, myAddress));
 
             if (bStaking)
                 commandline.Process(string.Format("walletpassphrase \"{0}\" 99999999 true", pwd));
