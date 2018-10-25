@@ -24,6 +24,7 @@ namespace wallet_checker
         public static string OtpSecretKey = "";
         public static string TimeZoneName = TimeZoneInfo.Local.StandardName;
         public static int[] MiniumVersion = new int[3];
+        public static float MiniumPing = 1.0f;
 
         ///--------------------------------------------------------------------------------------------------------
         ///
@@ -55,6 +56,8 @@ namespace wallet_checker
                     {
                         int.TryParse( verList[i], out MiniumVersion[i] );
                     }
+
+                    MiniumPing = (float)json["MiniumPing"];
 
                     try
                     {

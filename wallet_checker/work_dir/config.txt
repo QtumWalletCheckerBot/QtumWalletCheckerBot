@@ -7,5 +7,6 @@
   "RPC Password": "qtum_wallet_checker_password",
   "Startup Auto Staking": true,
   "TimeZone" : "Korea Standard Time",
-  "MiniumVersion" : "0.16.1"
+  "MiniumVersion" : "0.16.1",
+  "MiniumPing" : 1.0
 }
