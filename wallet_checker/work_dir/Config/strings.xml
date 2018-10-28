@@ -294,4 +294,16 @@
   <data name ="트랜젝션 리스트 응답 완료.\n">
 	<en>Complete response of the transaction list.</en>
   </data>
+  <data name ="월렛체커 업데이트">
+	<en>Update Wallet Checker</en>
+  </data>
+  <data name ="월렛체커를 업데이트 합니다.">
+	<en>Update your Wallet Checker.</en>
+  </data>
+  <data name ="체커 업데이트 응답 완료.\n">
+	<en>Checker Update response completed.</en>
+  </data>
+  <data name ="IPFS 해시값을 입력하세요.">
+	<en>Please enter an IPFS hash value.</en>
+  </data>
 </root>

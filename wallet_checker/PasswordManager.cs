@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using wallet_checker_common;
 
 namespace wallet_checker
 {
@@ -13,7 +14,7 @@ namespace wallet_checker
     {
         ///--------------------------------------------------------------------------------------------------------
         ///
-        static public readonly string passwordFile = Directory.GetCurrentDirectory() + @"\data.bin";
+        static public readonly string passwordFile = Directory.GetCurrentDirectory() + @".\\Config\\data.bin";
 
         ///--------------------------------------------------------------------------------------------------------
         /// 패스워드가 등록되어 있는지 확인하고 패스워드를 등록 합니다.

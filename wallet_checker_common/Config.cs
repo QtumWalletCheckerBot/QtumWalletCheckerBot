@@ -5,10 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace wallet_checker
+namespace wallet_checker_common
 {
     static public class Config
     {
@@ -32,7 +31,7 @@ namespace wallet_checker
         {
             try
             {
-                using (StreamReader reader = new StreamReader("Config.txt"))
+                using (StreamReader reader = new StreamReader("Config/Config.txt"))
                 {
                     char[] buffer = new char[1024 * 1024];
                     reader.ReadBlock(buffer, 0, buffer.Length);
@@ -52,21 +51,21 @@ namespace wallet_checker
                     string versionStr = json["MiniumVersion"].ToString();
                     string[] verList = versionStr.Trim().Split('.');
 
-                    for(int i=0; i<3; ++i)
+                    for (int i = 0; i < 3; ++i)
                     {
-                        int.TryParse( verList[i], out MiniumVersion[i] );
+                        int.TryParse(verList[i], out MiniumVersion[i]);
                     }
 
                     MiniumPing = (float)json["MiniumPing"];
 
                     try
                     {
-                        if(TimeZoneInfo.FindSystemTimeZoneById(TimeZoneName) == null)
+                        if (TimeZoneInfo.FindSystemTimeZoneById(TimeZoneName) == null)
                         {
                             TimeZoneName = TimeZone.CurrentTimeZone.StandardName;
                         }
                     }
-                    catch(Exception)
+                    catch (Exception)
                     {
                         TimeZoneName = TimeZone.CurrentTimeZone.StandardName;
                     }
@@ -86,9 +85,9 @@ namespace wallet_checker
                     strings.Load();
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                Logger.Log( "Failed Load Config" + e.ToString());
+                Logger.Log("Failed Load Config" + e.ToString());
                 return false;
             }
 
@@ -101,7 +100,7 @@ namespace wallet_checker
         {
             try
             {
-                using (StreamWriter file = new StreamWriter("Config.txt"))
+                using (StreamWriter file = new StreamWriter("Config/Config.txt"))
                 {
                     using (JsonTextWriter writer = new JsonTextWriter(file))
                     {
@@ -124,7 +123,7 @@ namespace wallet_checker
             }
             catch (Exception e)
             {
-                Logger.Log( "Failed Save Config : " + e.ToString());
+                Logger.Log("Failed Save Config : " + e.ToString());
                 return false;
             }
 

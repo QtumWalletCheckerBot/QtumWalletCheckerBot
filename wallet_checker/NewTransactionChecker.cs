@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using wallet_checker_common;
 
 namespace wallet_checker
 {
@@ -57,7 +58,7 @@ namespace wallet_checker
         {
             try
             {
-                using (FileStream file = File.Open("txLastCheckTime.bin", FileMode.OpenOrCreate))
+                using (FileStream file = File.Open("Config/txLastCheckTime.bin", FileMode.OpenOrCreate))
                 {
                     using (StreamReader reader = new StreamReader(file))
                     {
@@ -85,7 +86,7 @@ namespace wallet_checker
 
         static private void SaveLastTime()
         {
-            using (FileStream file = File.Open("txLastCheckTime.bin", FileMode.Create))
+            using (FileStream file = File.Open("Config/txLastCheckTime.bin", FileMode.Create))
             {
                 using (StreamWriter writer = new StreamWriter(file))
                 {

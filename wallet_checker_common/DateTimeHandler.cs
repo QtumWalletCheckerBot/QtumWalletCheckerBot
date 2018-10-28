@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace wallet_checker
+namespace wallet_checker_common
 {
     static public class DateTimeHandler
     {
@@ -13,9 +13,9 @@ namespace wallet_checker
             try
             {
                 TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(Config.TimeZoneName);
-                return TimeZoneInfo.ConvertTimeFromUtc(TimeZoneInfo.ConvertTimeToUtc(srcTime), timeZoneInfo);                   
+                return TimeZoneInfo.ConvertTimeFromUtc(TimeZoneInfo.ConvertTimeToUtc(srcTime), timeZoneInfo);
             }
-            catch(Exception)
+            catch (Exception)
             {
             }
 
@@ -31,11 +31,11 @@ namespace wallet_checker
 
                 return ToLocalTime(DateTime.Now);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return DateTime.Now;
             }
-            
+
         }
     }
 }

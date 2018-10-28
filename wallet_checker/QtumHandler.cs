@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using wallet_checker_common;
 
 namespace wallet_checker
 {
@@ -393,9 +394,9 @@ namespace wallet_checker
             string cmdResult = "";
 
             if(string.IsNullOrEmpty(myAddress))
-                cmdResult = commandline.Process(string.Format("sendtoaddress \"{0}\" {1} \"\" \"\" true", destAddress, amount));
+                cmdResult = commandline.Process(string.Format("sendtoaddress \"{0}\" {1} \"\" \"\" false", destAddress, amount));
             else
-                cmdResult = commandline.Process(string.Format("sendtoaddress \"{0}\" {1} \"\" \"\" true null null \"\" \"{2}\" true", destAddress, amount, myAddress));
+                cmdResult = commandline.Process(string.Format("sendtoaddress \"{0}\" {1} \"\" \"\" false null null \"\" \"{2}\" true", destAddress, amount, myAddress));
 
             if (bStaking)
                 commandline.Process(string.Format("walletpassphrase \"{0}\" 99999999 true", pwd));

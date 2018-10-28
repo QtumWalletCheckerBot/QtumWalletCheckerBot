@@ -4,17 +4,43 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wallet_checker", "wallet_checker\wallet_checker.csproj", "{42F268A7-905F-4758-8C60-4D6957BE177E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{246A83C5-D0F5-4DEF-8A43-CBBB26FDF234} = {246A83C5-D0F5-4DEF-8A43-CBBB26FDF234}
+		{DEA0C7F4-BDC8-48CF-A736-6B8DA5A67034} = {DEA0C7F4-BDC8-48CF-A736-6B8DA5A67034}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "update_checker", "UpdateChecker\update_checker.csproj", "{DEA0C7F4-BDC8-48CF-A736-6B8DA5A67034}"
+	ProjectSection(ProjectDependencies) = postProject
+		{246A83C5-D0F5-4DEF-8A43-CBBB26FDF234} = {246A83C5-D0F5-4DEF-8A43-CBBB26FDF234}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wallet_checker_common", "wallet_checker_common\wallet_checker_common.csproj", "{246A83C5-D0F5-4DEF-8A43-CBBB26FDF234}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Shipping|Any CPU = Shipping|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{42F268A7-905F-4758-8C60-4D6957BE177E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{42F268A7-905F-4758-8C60-4D6957BE177E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42F268A7-905F-4758-8C60-4D6957BE177E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42F268A7-905F-4758-8C60-4D6957BE177E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42F268A7-905F-4758-8C60-4D6957BE177E}.Shipping|Any CPU.ActiveCfg = Shipping|Any CPU
+		{42F268A7-905F-4758-8C60-4D6957BE177E}.Shipping|Any CPU.Build.0 = Shipping|Any CPU
+		{DEA0C7F4-BDC8-48CF-A736-6B8DA5A67034}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEA0C7F4-BDC8-48CF-A736-6B8DA5A67034}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEA0C7F4-BDC8-48CF-A736-6B8DA5A67034}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEA0C7F4-BDC8-48CF-A736-6B8DA5A67034}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEA0C7F4-BDC8-48CF-A736-6B8DA5A67034}.Shipping|Any CPU.ActiveCfg = Shipping|Any CPU
+		{DEA0C7F4-BDC8-48CF-A736-6B8DA5A67034}.Shipping|Any CPU.Build.0 = Shipping|Any CPU
+		{246A83C5-D0F5-4DEF-8A43-CBBB26FDF234}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{246A83C5-D0F5-4DEF-8A43-CBBB26FDF234}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{246A83C5-D0F5-4DEF-8A43-CBBB26FDF234}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{246A83C5-D0F5-4DEF-8A43-CBBB26FDF234}.Release|Any CPU.Build.0 = Release|Any CPU
+		{246A83C5-D0F5-4DEF-8A43-CBBB26FDF234}.Shipping|Any CPU.ActiveCfg = Shipping|Any CPU
+		{246A83C5-D0F5-4DEF-8A43-CBBB26FDF234}.Shipping|Any CPU.Build.0 = Shipping|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

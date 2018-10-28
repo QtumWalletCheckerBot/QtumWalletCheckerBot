@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,15 +8,13 @@ using wallet_checker_common;
 
 namespace wallet_checker.Command
 {
-    class RestoreWallet : ICommand
+    class UpdateChecker : ICommand
     {
-        ///--------------------------------------------------------------------------------------------------------
-        ///
         enum eCommandState
         {
             Ready,
             InputWaitOtp,
-            InputWaitChoiceWallet,
+            InputWaitIPFSHash,
         }
 
         private eCommandState commandState = eCommandState.Ready;
@@ -23,24 +22,20 @@ namespace wallet_checker.Command
         DateTime waitStartTime = DateTime.MinValue;
 
         ///--------------------------------------------------------------------------------------------------------
-        ///
+        /// 
         public override eCommand GetCommandType()
         {
-            return eCommand.RestoreWallet;
+            return eCommand.UpdateChecker;
         }
 
-        ///--------------------------------------------------------------------------------------------------------
-        ///
         public override string GetCommandName()
         {
-            return strings.GetString("지갑 복구");
+            return strings.GetString("월렛체커 업데이트");
         }
 
-        ///--------------------------------------------------------------------------------------------------------
-        ///
         public override string GetCommandDesc()
         {
-            return strings.GetString("지갑을 백업 파일로 복구 합니다.");
+            return strings.GetString("월렛체커를 업데이트 합니다.");
         }
 
         ///--------------------------------------------------------------------------------------------------------
@@ -64,7 +59,7 @@ namespace wallet_checker.Command
         {
             base.OnFinish();
 
-            Logger.Log("지갑 복구 응답 완료.\n");
+            Logger.Log("체커 업데이트 응답 완료.\n");
 
             commandState = eCommandState.Ready;
 
@@ -84,8 +79,6 @@ namespace wallet_checker.Command
             {
                 if ((DateTime.Now - waitStartTime).Ticks / TimeSpan.TicksPerSecond > 60.0f)
                 {
-                    Logger.Log("지갑 복구 응답 완료.\n");
-
                     IsCompleted = true;
 
                     await SendMessage(otpWaitUserId, strings.GetString("제한시간 초과"));
@@ -114,29 +107,11 @@ namespace wallet_checker.Command
 
                         if (OtpChecker.CheckOtp(otpStr))
                         {
-                            List<string> fileList = GetBackupFileList();
-
-                            if(fileList.Count == 0)
-                            {
-                                IsCompleted = true;
-
-                                await SendMessage(requesterId, strings.GetString("백업 파일이 없습니다."));
-
-                                return;
-                            }
-
-                            string response = strings.GetString("백업 파일을 숫자로 선택하세요.");
-
-                            for(int i=0; i<fileList.Count; ++i)
-                            {
-                                response += string.Format("\n{0}. {1}", i + 1, fileList[i]);
-                            }
+                            commandState = eCommandState.InputWaitIPFSHash;
 
                             waitStartTime = DateTime.Now;
 
-                            commandState = eCommandState.InputWaitChoiceWallet;
-
-                            await SendMessage(requesterId, response);
+                            await SendMessage(requesterId, strings.GetString("IPFS 해시값을 입력하세요."));
                         }
                         else
                         {
@@ -146,50 +121,50 @@ namespace wallet_checker.Command
                         }
                     }
                     break;
-                case eCommandState.InputWaitChoiceWallet:
+
+                case eCommandState.InputWaitIPFSHash:
                     {
+                        string hashStr = message.Text.Trim();
+
+                        ProcessStartInfo startInfo = new ProcessStartInfo();
+                        startInfo.FileName = @"cmd";
+                        startInfo.WindowStyle = ProcessWindowStyle.Hidden;            // cmd창이 숨겨지도록 하기
+                        startInfo.CreateNoWindow = true;                              // cmd창을 띄우지 안도록 하기
+
+                        startInfo.UseShellExecute = false;
+                        startInfo.RedirectStandardOutput = true;                      // cmd창에서 데이터를 가져오기
+                        startInfo.RedirectStandardInput = true;                       // cmd창으로 데이터 보내기
+                        startInfo.RedirectStandardError = true;                       // cmd창에서 오류 내용 가져오기
+
+                        startInfo.StandardOutputEncoding = Encoding.UTF8;
+                        startInfo.WorkingDirectory = System.IO.Directory.GetCurrentDirectory();
+
+                        try
+                        {
+                            string command = string.Format("update_checker {0}", hashStr);
+
+                            using (Process process = new Process())
+                            {
+                                process.EnableRaisingEvents = false;
+                                process.StartInfo = startInfo;
+
+                                process.Start();
+                                process.StandardInput.Write(command + Environment.NewLine);
+                                process.StandardInput.Close();
+
+                                process.WaitForExit();
+                                process.Close();
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Log(e.ToString());
+                        }
+
                         IsCompleted = true;
-
-                        int backupNum = 0;
-
-                        List<string> fileList = GetBackupFileList();
-
-                        string response = strings.GetString("지갑 복구 응답 완료.\n");
-
-                        if ( int.TryParse(msg, out backupNum) == false || backupNum <= 0 || fileList.Count < backupNum)
-                        {
-                            response += "\n" + strings.GetString("잘못된 번호 입니다.");
-                            await SendMessage(requesterId, response);
-                        }
-                        else
-                        {
-                            string filename = fileList[backupNum - 1];
-
-                            await SendMessage(requesterId, strings.GetString("지갑을 복구하는 중 입니다....") + " " + filename);
-                            
-                            response += "\n" + QtumHandler.RestoreWallet("./backups/" + filename);
-
-                            await SendMessage(requesterId, response);
-                        }
                     }
                     break;
             }
-        }
-
-        private List<string> GetBackupFileList()
-        {
-            List<string> fileList = new List<string>();
-
-            System.IO.DirectoryInfo di = new System.IO.DirectoryInfo("./backups");
-            foreach (System.IO.FileInfo File in di.GetFiles())
-            {
-                if (File.Extension.ToLower().CompareTo(".dat") == 0)
-                {
-                    fileList.Add(File.Name);
-                }
-            }
-
-            return fileList;
         }
     }
 }

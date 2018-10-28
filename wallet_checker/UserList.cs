@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot.Types.Enums;
+using wallet_checker_common;
 
 namespace wallet_checker
 {
@@ -19,7 +20,7 @@ namespace wallet_checker
             public uint accessCount = 0;
         }
 
-        static private string savePath = "./userList.txt";
+        static private string savePath = "Config/userList.txt";
 
         static private HashSet<long> userIdList = new HashSet<long>();
         static private Dictionary<long, InvalidUserInfo> invalidUserList = new Dictionary<long, InvalidUserInfo>();

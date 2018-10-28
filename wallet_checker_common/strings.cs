@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace wallet_checker
+namespace wallet_checker_common
 {
     static public class strings
     {
@@ -24,7 +24,7 @@ namespace wallet_checker
 
         static private Dictionary<eLanguageCode, Dictionary<string, string>> dic = new Dictionary<eLanguageCode, Dictionary<string, string>>();
 
-        static public eLanguageCode LanguageCode { get {return languageCode; } set { languageCode = value; }}
+        static public eLanguageCode LanguageCode { get { return languageCode; } set { languageCode = value; } }
 
         ///--------------------------------------------------------------------------------------------------------
         ///
@@ -32,7 +32,7 @@ namespace wallet_checker
         {
             try
             {
-                XDocument xdoc = XDocument.Load(@"strings.xml");                
+                XDocument xdoc = XDocument.Load(@"Config/strings.xml");
 
                 dic.Clear();
 
@@ -40,7 +40,7 @@ namespace wallet_checker
                 dic.Add(eLanguageCode.Ko, new Dictionary<string, string>());
 
                 var enDic = dic[eLanguageCode.En];
-                
+
                 IEnumerable<XElement> emps = xdoc.Root.Elements();
                 foreach (var emp in emps)
                 {
@@ -50,7 +50,7 @@ namespace wallet_checker
                     enDic.Add(strKey, enStr);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 System.Console.WriteLine(e.ToString());
                 return false;

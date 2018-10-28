@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot.Types.Enums;
+using wallet_checker_common;
 
 namespace wallet_checker.Command
 {
@@ -22,6 +23,7 @@ namespace wallet_checker.Command
         BackupWallet,
         RestoreWallet,
         RestartMachine,
+        UpdateChecker,
     }
     
 

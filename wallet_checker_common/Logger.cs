@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace wallet_checker
+namespace wallet_checker_common
 {
     public class Logger
     {
@@ -51,7 +51,7 @@ namespace wallet_checker
 
         ~Logger()
         {
-        }      
+        }
 
         private void WriteLog(String msg)
         {
@@ -63,12 +63,12 @@ namespace wallet_checker
                 streamWriter.WriteLine(string.Format("[{0}] {1}", GetDateTime(), msg));
                 streamWriter.Flush();
             }
-            catch(Exception)
+            catch (Exception)
             {
 
             }
         }
-        
+
         static public void Log(String format, params object[] args)
         {
             string log = strings.Format(format, args);

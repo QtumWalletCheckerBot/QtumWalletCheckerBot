@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using wallet_checker_common;
 
 namespace wallet_checker.Command
 {
@@ -26,6 +27,7 @@ namespace wallet_checker.Command
                 case eCommand.BackupWallet: return new BackupWallet();
                 case eCommand.RestoreWallet: return new RestoreWallet();
                 case eCommand.RestartMachine: return new RestartMachine();
+                case eCommand.UpdateChecker: return new UpdateChecker();
             }
 
             return null;
